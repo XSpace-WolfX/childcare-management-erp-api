@@ -76,9 +76,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/linkresponsableenfant/enfant/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -150,9 +151,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/linkresponsableenfant/responsable/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Le responsable spécifié n'existe pas.");
         }
 
         [Fact]
@@ -257,6 +259,78 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
+        public async Task CreateLinkResponsableEnfant_ShouldReturnNotFound_WhenEnfantDoesNotExist()
+        {
+            // Arrange
+            using var factory = new CustomWebApplicationFactory();
+            var client = factory.CreateClient();
+
+            // Étape 1 – Créer un responsable valide
+            var createResponsableDto = new CreateResponsableDto
+            {
+                Nom = "Test",
+                Prenom = "Responsable",
+                Email = "test.responsable@example.com",
+                Telephone = "0600000001"
+            };
+
+            var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", createResponsableDto);
+            responsableResponse.EnsureSuccessStatusCode();
+            var responsable = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+
+            // Étape 2 – EnfantId inexistant
+            var linkDto = new CreateLinkResponsableEnfantDto
+            {
+                EnfantId = 9999,
+                ResponsableId = responsable!.Id,
+                Affiliation = "TestAffiliation"
+            };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
+
+            // Assert
+            exception.Detail.ShouldBe("L'enfant spécifié n'existe pas.");
+        }
+
+        [Fact]
+        public async Task CreateLinkResponsableEnfant_ShouldReturnNotFound_WhenResponsableDoesNotExist()
+        {
+            // Arrange
+            using var factory = new CustomWebApplicationFactory();
+            var client = factory.CreateClient();
+
+            // Étape 1 – Créer un enfant valide
+            var createEnfantDto = new CreateEnfantDto
+            {
+                Nom = "Test",
+                Prenom = "Enfant",
+                DateNaissance = DateOnly.FromDateTime(DateTime.Today.AddYears(-6)),
+                Civilite = "F"
+            };
+
+            var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", createEnfantDto);
+            enfantResponse.EnsureSuccessStatusCode();
+            var enfant = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
+
+            // Étape 2 – ResponsableId inexistant
+            var linkDto = new CreateLinkResponsableEnfantDto
+            {
+                EnfantId = enfant!.Id,
+                ResponsableId = 9999,
+                Affiliation = "TestAffiliation"
+            };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
+
+            // Assert
+            exception.Detail.ShouldBe("Le responsable spécifié n'existe pas.");
+        }
+
+        [Fact]
         public async Task CreateLinkResponsableEnfant_ShouldReturnConflict_WhenLinkExists()
         {
             // Arrange
@@ -287,9 +361,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act - Second creation should fail
             var secondResponse = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", dto);
+            var exception = await AssertProblemDetails.AssertProblem(secondResponse, HttpStatusCode.Conflict);
 
             // Assert
-            secondResponse.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+            exception.Detail.ShouldBe("Ce lien existe déjà entre ce responsable et cet enfant.");
         }
 
         [Fact]
@@ -350,9 +425,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/linkresponsableenfant", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun lien Responsable / Enfant trouvé à mettre à jour.");
         }
 
         [Fact]
@@ -399,9 +475,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync("/api/v1/linkresponsableenfant/responsable/9999/enfant/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun lien Responsable / Enfant trouvé à supprimer.");
         }
     }
 }

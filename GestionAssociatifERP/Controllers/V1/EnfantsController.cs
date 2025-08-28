@@ -66,9 +66,6 @@ namespace GestionAssociatifERP.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEnfantDto enfantDto)
         {
-            if (enfantDto == null)
-                return BadRequest(new { Message = "Le corps de la requête ne peut pas être vide." });
-
             var result = await _enfantService.CreateEnfantAsync(enfantDto);
 
             return CreatedAtAction(nameof(GetById), new { id = result!.Id }, result);

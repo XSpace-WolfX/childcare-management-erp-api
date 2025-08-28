@@ -9,7 +9,10 @@ namespace GestionAssociatifERP.Helpers
         {
             httpContext.Response.StatusCode = exception switch
             {
-                _ => StatusCodes.Status500InternalServerError
+                NotFoundException => StatusCodes.Status404NotFound,
+                BadRequestException => StatusCodes.Status400BadRequest,
+                ConflictException => StatusCodes.Status409Conflict,
+                _ => StatusCodes.Status500InternalServerError   
             };
 
             return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
@@ -19,12 +22,34 @@ namespace GestionAssociatifERP.Helpers
                 ProblemDetails = new ProblemDetails
                 {
                     Type = exception.GetType().Name,
-                    Title = "An error occurred while processing your request.",
+                    Title = httpContext.Response.StatusCode switch
+                    {
+                        400 => "Requête invalide",
+                        404 => "Ressource introuvable",
+                        409 => "Conflit détecté",
+                        500 => "Erreur interne du serveur",
+                        _ => "Erreur"
+                    },
                     Detail = exception.Message,
                     Status = httpContext.Response.StatusCode,
                     Instance = $"{ httpContext.Request.Method } { httpContext.Request.Path }"
                 }
             });
         }
+    }
+
+    public class NotFoundException : Exception
+    {
+        public NotFoundException(string message) : base(message) { }
+    }
+
+    public class BadRequestException : Exception
+    {
+        public BadRequestException(string message) : base(message) { }
+    }
+
+    public class ConflictException : Exception
+    {
+        public ConflictException(string message) : base(message) { }
     }
 }

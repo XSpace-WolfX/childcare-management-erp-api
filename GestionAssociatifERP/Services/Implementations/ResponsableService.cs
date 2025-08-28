@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -31,7 +32,7 @@ namespace GestionAssociatifERP.Services
         {
             var responsable = await _responsableRepository.GetByIdAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             return _mapper.Map<ResponsableDto>(responsable);
         }
@@ -40,7 +41,7 @@ namespace GestionAssociatifERP.Services
         {
             var responsable = await _responsableRepository.GetWithInformationFinanciereAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             return _mapper.Map<ResponsableWithInformationFinanciereDto>(responsable);
         }
@@ -49,7 +50,7 @@ namespace GestionAssociatifERP.Services
         {
             var responsable = await _responsableRepository.GetWithSituationPersonnelleAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             return _mapper.Map<ResponsableWithSituationPersonnelleDto>(responsable);
         }
@@ -58,7 +59,7 @@ namespace GestionAssociatifERP.Services
         {
             var responsable = await _responsableRepository.GetWithEnfantsAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             return _mapper.Map<ResponsableWithEnfantsDto>(responsable);
         }
@@ -81,11 +82,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdateResponsableAsync(int id, UpdateResponsableDto responsableDto)
         {
             if (id != responsableDto.Id)
-                throw new Exception("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé.");
 
             var responsable = await _responsableRepository.GetByIdAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             _mapper.Map(responsableDto, responsable);
 
@@ -96,7 +97,7 @@ namespace GestionAssociatifERP.Services
         {
             var responsable = await _responsableRepository.GetByIdAsync(id);
             if (responsable == null)
-                throw new Exception("Aucun responsable correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun responsable correspondant n'a été trouvé.");
 
             await _responsableRepository.DeleteAsync(id);
         }

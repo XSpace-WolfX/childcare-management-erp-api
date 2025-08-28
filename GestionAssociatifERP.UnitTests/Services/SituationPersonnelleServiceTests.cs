@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _situationPersonnelleService.GetAllSituationsPersonnellesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(x => x.Id == 1 && x.SituationFamiliale == "Situation 1");
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(x => x.Id == 1 && x.SituationFamiliale == "Situation 1");
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _situationPersonnelleService.GetAllSituationsPersonnellesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,10 +96,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _situationPersonnelleService.GetSituationPersonnelleAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.SituationFamiliale.ShouldBe("Situation 1");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.SituationFamiliale.ShouldBe("Situation 1");
         }
 
         [Fact]
@@ -113,12 +110,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.GetSituationPersonnelleAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _situationPersonnelleService.GetSituationPersonnelleAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -149,10 +144,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _situationPersonnelleService.CreateSituationPersonnelleAsync(newCreateDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.SituationFamiliale.ShouldBe("Situation 1");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.SituationFamiliale.ShouldBe("Situation 1");
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.AddAsync(situationPersonnelle), Times.Once);
         }
@@ -168,12 +162,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((SituationPersonnelle)null!);
 
             // Act
-            var result = await _situationPersonnelleService.CreateSituationPersonnelleAsync(newCreateDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _situationPersonnelleService.CreateSituationPersonnelleAsync(newCreateDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création de la situation personnelle : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création de la situation personnelle : Le Mapping a échoué.");
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<SituationPersonnelle>()), Times.Never);
         }
@@ -199,11 +191,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(1, updateSituationPersonnelleDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _situationPersonnelleService.UpdateSituationPersonnelleAsync(1, updateSituationPersonnelleDto));
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.UpdateAsync(situationPersonnelle), Times.Once);
         }
@@ -216,12 +206,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updateSituationPersonnelleDto = new UpdateSituationPersonnelleDto { Id = 2, SituationFamiliale = "Updated Situation" };
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant de la situation personnelle ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant de la situation personnelle ne correspond pas à celui de l'objet envoyé.");
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<SituationPersonnelle>()), Times.Never);
         }
@@ -238,12 +226,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<SituationPersonnelle>()), Times.Never);
         }
@@ -264,11 +250,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id));
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -284,12 +268,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
 
             _situationPersonnelleRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

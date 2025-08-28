@@ -89,9 +89,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/personnesautorisees/999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -172,9 +173,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/personnesautorisees/999/with-enfants");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -197,22 +199,6 @@ namespace GestionAssociatifERP.IntegrationTests
             createdPersonne.ShouldNotBeNull();
             createdPersonne.Nom.ShouldBe("John");
             createdPersonne.Prenom.ShouldBe("Doe");
-        }
-
-        [Fact]
-        public async Task CreatePersonneAutorisee_ShouldReturnBadRequest_WhenDtoIsNull()
-        {
-            // Arrange
-            using var factory = new CustomWebApplicationFactory();
-            var client = factory.CreateClient();
-
-            HttpContent nullBody = JsonContent.Create<object?>(null);
-
-            // Act
-            var response = await client.PostAsync("/api/v1/personnesautorisees", nullBody);
-
-            // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -264,9 +250,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/personnesautorisees/1", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.BadRequest);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            exception.Detail.ShouldBe("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé.");
         }
 
         [Fact]
@@ -285,9 +272,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/personnesautorisees/999", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -322,9 +310,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync("/api/v1/personnesautorisees/999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -30,7 +31,7 @@ namespace GestionAssociatifERP.Services
         {
             var informationFinanciere = await _informationFinanciereRepository.GetByIdAsync(id);
             if (informationFinanciere == null)
-                throw new Exception("Aucune information financière correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune information financière correspondante n'a été trouvée.");
 
             return _mapper.Map<InformationFinanciereDto>(informationFinanciere);
         }
@@ -53,11 +54,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdateInformationFinanciereAsync(int id, UpdateInformationFinanciereDto informationFinanciereDto)
         {
             if (id != informationFinanciereDto.Id)
-                throw new Exception("L'identifiant de l'information financière ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant de l'information financière ne correspond pas à celui de l'objet envoyé.");
 
             var informationFinanciere = await _informationFinanciereRepository.GetByIdAsync(id);
             if (informationFinanciere == null)
-                throw new Exception("Aucune information financière correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune information financière correspondante n'a été trouvée.");
 
             _mapper.Map(informationFinanciereDto, informationFinanciere);
 
@@ -68,7 +69,7 @@ namespace GestionAssociatifERP.Services
         {
             var informationFinanciere = await _informationFinanciereRepository.GetByIdAsync(id);
             if (informationFinanciere == null)
-                throw new Exception("Aucune information financière correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune information financière correspondante n'a été trouvée.");
 
             await _informationFinanciereRepository.DeleteAsync(id);
         }
