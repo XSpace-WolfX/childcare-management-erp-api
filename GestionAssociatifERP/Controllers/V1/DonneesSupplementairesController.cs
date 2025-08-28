@@ -39,9 +39,6 @@ namespace GestionAssociatifERP.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDonneeSupplementaireDto donneeSupplementaireDto)
         {
-            if (donneeSupplementaireDto == null)
-                return BadRequest(new { Message = "Le corps de la requête ne peut pas être vide." });
-
             var result = await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(donneeSupplementaireDto);
 
             return CreatedAtAction(nameof(GetById), new { id = result!.Id }, result);

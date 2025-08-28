@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetAllEnfantsAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(e => e.Nom == "Alice");
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(e => e.Nom == "Alice");
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetAllEnfantsAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,9 +96,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Nom.ShouldBe("Alice");
+            result.ShouldNotBeNull();
+            result.Nom.ShouldBe("Alice");
         }
 
         [Fact]
@@ -112,12 +109,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.GetEnfantAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -158,13 +153,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.Responsables.ShouldNotBeNull();
-            result.Data.Responsables.ShouldNotBeEmpty();
-            result.Data.Responsables.Count.ShouldBe(2);
-            result.Data.Responsables.ShouldContain(r => r.Nom == "Bob");
+            result.ShouldNotBeNull();
+            result.Nom.ShouldBe("Alice");
+            result.Responsables.ShouldNotBeNull();
+            result.Responsables.ShouldNotBeEmpty();
+            result.Responsables.Count.ShouldBe(2);
+            result.Responsables.ShouldContain(r => r.Nom == "Bob");
         }
 
         [Fact]
@@ -197,12 +191,11 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.Responsables.ShouldNotBeNull();
-            result.Data.Responsables.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Nom.ShouldBe("Alice");
+            result.Responsables.ShouldNotBeNull();
+            result.Responsables.ShouldBeEmpty();
         }
 
         [Fact]
@@ -214,12 +207,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.GetEnfantWithResponsablesAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -259,13 +250,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.PersonnesAutorisees.ShouldNotBeNull();
-            result.Data.PersonnesAutorisees.ShouldNotBeEmpty();
-            result.Data.PersonnesAutorisees.Count.ShouldBe(2);
-            result.Data.PersonnesAutorisees.ShouldContain(r => r.Nom == "Bob");
+            result.ShouldNotBeNull();
+            result.Nom.ShouldBe("Alice");
+            result.PersonnesAutorisees.ShouldNotBeNull();
+            result.PersonnesAutorisees.ShouldNotBeEmpty();
+            result.PersonnesAutorisees.Count.ShouldBe(2);
+            result.PersonnesAutorisees.ShouldContain(r => r.Nom == "Bob");
         }
 
         [Fact]
@@ -298,12 +288,11 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.PersonnesAutorisees.ShouldNotBeNull();
-            result.Data.PersonnesAutorisees.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Nom.ShouldBe("Alice");
+            result.PersonnesAutorisees.ShouldNotBeNull();
+            result.PersonnesAutorisees.ShouldBeEmpty();
         }
 
         [Fact]
@@ -315,12 +304,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -361,13 +348,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.DonneeSupplementaires.ShouldNotBeNull();
-            result.Data.DonneeSupplementaires.ShouldNotBeEmpty();
-            result.Data.DonneeSupplementaires.Count.ShouldBe(2);
-            result.Data.DonneeSupplementaires.ShouldContain(r => r.Valeur == "A");
+            result.ShouldNotBeNull();
+            result.Nom.ShouldBe("Alice");
+            result.DonneeSupplementaires.ShouldNotBeNull();
+            result.DonneeSupplementaires.ShouldNotBeEmpty();
+            result.DonneeSupplementaires.Count.ShouldBe(2);
+            result.DonneeSupplementaires.ShouldContain(r => r.Valeur == "A");
         }
 
         [Fact]
@@ -400,12 +386,11 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Nom.ShouldBe("Alice");
-            result.Data.DonneeSupplementaires.ShouldNotBeNull();
-            result.Data.DonneeSupplementaires.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Nom.ShouldBe("Alice");
+            result.DonneeSupplementaires.ShouldNotBeNull();
+            result.DonneeSupplementaires.ShouldBeEmpty();
         }
 
         [Fact]
@@ -417,12 +402,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -453,9 +436,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _enfantService.CreateEnfantAsync(newEnfantDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Nom.ShouldBe("Alice");
+            result.ShouldNotBeNull();
+            result.Nom.ShouldBe("Alice");
 
             _enfantRepositoryMock.Verify(repo => repo.AddAsync(enfant), Times.Once);
         }
@@ -471,12 +453,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((Enfant)null!);
 
             // Act
-            var result = await _enfantService.CreateEnfantAsync(newEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.CreateEnfantAsync(newEnfantDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création de l'enfant : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création de l'enfant : Le Mapping a échoué.");
 
             _enfantRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Enfant>()), Times.Never);
         }
@@ -502,11 +482,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _enfantService.UpdateEnfantAsync(id, updateEnfantDto));
 
             _enfantRepositoryMock.Verify(r => r.UpdateAsync(enfant), Times.Once);
         }
@@ -519,12 +497,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updateEnfantDto = new UpdateEnfantDto { Id = 2, Nom = "Alice" };
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.UpdateEnfantAsync(id, updateEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant de l'enfant ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant de l'enfant ne correspond pas à celui de l'objet envoyé.");
 
             _enfantRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Enfant>()), Times.Never);
         }
@@ -541,12 +517,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.UpdateEnfantAsync(id, updateEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
 
             _enfantRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Enfant>()), Times.Never);
         }
@@ -567,11 +541,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _enfantService.DeleteEnfantAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _enfantService.DeleteEnfantAsync(id));
 
             _enfantRepositoryMock.Verify(r => r.DeleteAsync(id), Times.Once);
         }
@@ -587,12 +559,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.DeleteEnfantAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _enfantService.DeleteEnfantAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
 
             _enfantRepositoryMock.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

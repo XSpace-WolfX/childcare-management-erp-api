@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _donneeSupplementaireService.GetAllDonneesSupplementairesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(e => e.Parametre == "Allergie");
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(e => e.Parametre == "Allergie");
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _donneeSupplementaireService.GetAllDonneesSupplementairesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,9 +96,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _donneeSupplementaireService.GetDonneeSupplementaireAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Parametre.ShouldBe("Allergie");
+            result.ShouldNotBeNull();
+            result.Parametre.ShouldBe("Allergie");
         }
 
         [Fact]
@@ -112,12 +109,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.GetDonneeSupplementaireAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _donneeSupplementaireService.GetDonneeSupplementaireAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -148,9 +143,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(newDonneeSupplementaireDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Parametre.ShouldBe("Allergie");
+            result.ShouldNotBeNull();
+            result.Parametre.ShouldBe("Allergie");
         }
 
         [Fact]
@@ -164,12 +158,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((DonneeSupplementaire)null!);
 
             // Act
-            var result = await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(newDonneeSupplementaireDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(newDonneeSupplementaireDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création de la donnée supplémentaire : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création de la donnée supplémentaire : Le Mapping a échoué.");
 
             _donneeSupplementaireRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<DonneeSupplementaire>()), Times.Never);
         }
@@ -195,11 +187,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto));
 
             _donneeSupplementaireRepositoryMock.Verify(r => r.UpdateAsync(donneeSupplementaire), Times.Once);
         }
@@ -212,12 +202,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updateDonneeSupplementaireDto = new UpdateDonneeSupplementaireDto { Id = 6, EnfantId = 3, Parametre = "Scolarisé" };
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé.");
 
             _donneeSupplementaireRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<DonneeSupplementaire>()), Times.Never);
         }
@@ -234,12 +222,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
             _donneeSupplementaireRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<DonneeSupplementaire>()), Times.Never);
         }
@@ -260,11 +246,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id));
 
             _donneeSupplementaireRepositoryMock.Verify(r => r.DeleteAsync(id), Times.Once);
         }
@@ -280,12 +264,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
             _donneeSupplementaireRepositoryMock.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

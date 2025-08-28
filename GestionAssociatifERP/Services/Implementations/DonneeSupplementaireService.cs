@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -31,7 +32,7 @@ namespace GestionAssociatifERP.Services
         {
             var donneeSupplementaire = await _donneeSupplementaireRepository.GetByIdAsync(id);
             if (donneeSupplementaire == null)
-                throw new Exception("Aucune donnée supplémentaire correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
             return _mapper.Map<DonneeSupplementaireDto>(donneeSupplementaire);
         }
@@ -54,11 +55,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdateDonneeSupplementaireAsync(int id, UpdateDonneeSupplementaireDto donneeSupplementaireDto)
         {
             if (id != donneeSupplementaireDto.Id)
-                throw new Exception("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé.");
 
             var donneeSupplementaire = await _donneeSupplementaireRepository.GetByIdAsync(id);
             if (donneeSupplementaire == null)
-                throw new Exception("Aucune donnée supplémentaire correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
             _mapper.Map(donneeSupplementaireDto, donneeSupplementaire);
 
@@ -69,7 +70,7 @@ namespace GestionAssociatifERP.Services
         {
             var donneeSupplementaire = await _donneeSupplementaireRepository.GetByIdAsync(id);
             if (donneeSupplementaire == null)
-                throw new Exception("Aucune donnée supplémentaire correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
             await _donneeSupplementaireRepository.DeleteAsync(id);
         }

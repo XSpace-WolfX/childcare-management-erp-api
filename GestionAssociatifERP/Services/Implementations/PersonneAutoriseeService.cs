@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -31,7 +32,7 @@ namespace GestionAssociatifERP.Services
         {
             var personneAutorisee = await _personneAutoriseeRepository.GetByIdAsync(id);
             if (personneAutorisee == null)
-                throw new Exception("Aucune personne autorisée correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune personne autorisée correspondante n'a été trouvée.");
 
             return _mapper.Map<PersonneAutoriseeDto>(personneAutorisee);
         }
@@ -40,7 +41,7 @@ namespace GestionAssociatifERP.Services
         {
             var personneAutorisee = await _personneAutoriseeRepository.GetWithEnfantsAsync(id);
             if (personneAutorisee == null)
-                throw new Exception("Aucune personne autorisée correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune personne autorisée correspondante n'a été trouvée.");
 
             return _mapper.Map<PersonneAutoriseeWithEnfantsDto>(personneAutorisee);
         }
@@ -63,11 +64,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdatePersonneAutoriseeAsync(int id, UpdatePersonneAutoriseeDto personneAutoriseeDto)
         {
             if (id != personneAutoriseeDto.Id)
-                throw new Exception("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé.");
 
             var personneAutorisee = await _personneAutoriseeRepository.GetByIdAsync(id);
             if (personneAutorisee is null)
-                throw new Exception("Aucune personne autorisée correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune personne autorisée correspondante n'a été trouvée.");
 
             _mapper.Map(personneAutoriseeDto, personneAutorisee);
 
@@ -78,7 +79,7 @@ namespace GestionAssociatifERP.Services
         {
             var personneAutorisee = await _personneAutoriseeRepository.GetByIdAsync(id);
             if (personneAutorisee is null)
-                throw new Exception("Aucune personne autorisée correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune personne autorisée correspondante n'a été trouvée.");
 
             await _personneAutoriseeRepository.DeleteAsync(id);
         }

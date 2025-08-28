@@ -1,12 +1,7 @@
 ﻿using GestionAssociatifERP.Dtos.V1;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionAssociatifERP.IntegrationTests
 {
@@ -101,9 +96,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/situationspersonnelles/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -130,22 +126,6 @@ namespace GestionAssociatifERP.IntegrationTests
             createdSituation.ShouldNotBeNull();
             createdSituation.Regime.ShouldBe("Test Regime");
             createdSituation.SituationFamiliale.ShouldBe("Description de la situation");
-        }
-
-        [Fact]
-        public async Task CreateSituationPersonnelle_ShouldReturnBadRequest_WhenDtoIsNull()
-        {
-            // Arrange
-            using var factory = new CustomWebApplicationFactory();
-            var client = factory.CreateClient();
-
-            HttpContent nullBody = JsonContent.Create<object?>(null);
-
-            // Act
-            var response = await client.PostAsync("/api/v1/situationspersonnelles", nullBody);
-
-            // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -202,9 +182,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/situationspersonnelles/1", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.BadRequest);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            exception.Detail.ShouldBe("L'identifiant de la situation personnelle ne correspond pas à celui de l'objet envoyé.");
         }
 
         [Fact]
@@ -223,9 +204,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/situationspersonnelles/9999", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -265,9 +247,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync("/api/v1/situationspersonnelles/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune situation personnelle correspondante n'a été trouvée.");
         }
     }
 }

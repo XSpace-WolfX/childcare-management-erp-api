@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -31,7 +32,7 @@ namespace GestionAssociatifERP.Services
         {
             var enfant = await _enfantRepository.GetByIdAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             return _mapper.Map<EnfantDto>(enfant);
         }
@@ -40,7 +41,7 @@ namespace GestionAssociatifERP.Services
         {
             var enfant = await _enfantRepository.GetWithResponsablesAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             return _mapper.Map<EnfantWithResponsablesDto>(enfant);
         }
@@ -49,7 +50,7 @@ namespace GestionAssociatifERP.Services
         {
             var enfant = await _enfantRepository.GetWithPersonnesAutoriseesAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             return _mapper.Map<EnfantWithPersonnesAutoriseesDto>(enfant);
         }
@@ -58,7 +59,7 @@ namespace GestionAssociatifERP.Services
         {
             var enfant = await _enfantRepository.GetWithDonneesSupplementairesAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             return _mapper.Map<EnfantWithDonneesSupplementairesDto>(enfant);
         }
@@ -81,11 +82,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdateEnfantAsync(int id, UpdateEnfantDto enfantDto)
         {
             if (id != enfantDto.Id)
-                throw new Exception("L'identifiant de l'enfant ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant de l'enfant ne correspond pas à celui de l'objet envoyé.");
 
             var enfant = await _enfantRepository.GetByIdAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             _mapper.Map(enfantDto, enfant);
 
@@ -96,7 +97,7 @@ namespace GestionAssociatifERP.Services
         {
             var enfant = await _enfantRepository.GetByIdAsync(id);
             if (enfant == null)
-                throw new Exception("Aucun enfant correspondant n'a été trouvé.");
+                throw new NotFoundException("Aucun enfant correspondant n'a été trouvé.");
 
             await _enfantRepository.DeleteAsync(id);
         }

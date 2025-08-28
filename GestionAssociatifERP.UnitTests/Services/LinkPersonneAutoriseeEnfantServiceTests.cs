@@ -64,9 +64,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
+            result.Count().ShouldBe(2);
         }
 
         [Fact]
@@ -78,12 +76,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetPersonnesAutoriseesByEnfantIdAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetPersonnesAutoriseesByEnfantIdAsync(1));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'enfant spécifié n'existe pas");
+            exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -107,8 +103,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeEmpty();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -144,9 +139,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
+            result.Count().ShouldBe(2);
         }
 
         [Fact]
@@ -158,12 +151,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetEnfantsByPersonneAutoriseeIdAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetEnfantsByPersonneAutoriseeIdAsync(1));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("La personne autorisée spécifiée n'existe pas");
+            exception.Message.ShouldBe("La personne autorisée spécifiée n'existe pas.");
         }
 
         [Fact]
@@ -187,8 +178,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeEmpty();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -203,9 +193,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkPersonneAutoriseeEnfantAsync(1, 1);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeTrue();
+            result.ShouldBeTrue();
         }
 
         [Fact]
@@ -220,9 +208,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkPersonneAutoriseeEnfantAsync(1, 1);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeFalse();
+            result.ShouldBeFalse();
         }
 
         [Fact]
@@ -290,11 +276,9 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.PersonneAutoriseeId.ShouldBe(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId);
-            result.Data.EnfantId.ShouldBe(newPersonneAutoriseeEnfantDto.EnfantId);
-            result.Data.Affiliation.ShouldBe("Mère");
+            result.PersonneAutoriseeId.ShouldBe(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId);
+            result.EnfantId.ShouldBe(newPersonneAutoriseeEnfantDto.EnfantId);
+            result.Affiliation.ShouldBe("Mère");
         }
 
         [Fact]
@@ -317,12 +301,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("La personne autorisée spécifiée n'existe pas");
+            exception.Message.ShouldBe("La personne autorisée spécifiée n'existe pas.");
         }
 
         [Fact]
@@ -345,12 +327,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'enfant spécifié n'existe pas");
+            exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -377,12 +357,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Ce lien existe déjà entre cette personne autorisée et cet enfant");
+            exception.Message.ShouldBe("Ce lien existe déjà entre cette personne autorisée et cet enfant.");
         }
 
         [Fact]
@@ -413,12 +391,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Erreur lors de la création du lien Personne Autorisée / Enfant : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création du lien Personne Autorisée / Enfant : Le Mapping a échoué.");
         }
 
         [Fact]
@@ -464,13 +440,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Échec de la création du lien Personne Autorisée / Enfant");
-            result.Data.ShouldBeNull();
+            exception.Message.ShouldBe("Échec de la création du lien Personne Autorisée / Enfant.");
         }
 
         [Fact]
@@ -508,11 +481,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto));
         }
 
         [Fact]
@@ -533,12 +504,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas");
+            exception.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");
         }
 
         [Fact]
@@ -550,11 +519,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1));
         }
 
         [Fact]
@@ -566,12 +533,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas");
+            exception.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");
         }
     }
 }

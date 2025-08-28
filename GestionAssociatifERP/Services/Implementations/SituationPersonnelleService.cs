@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -31,7 +32,7 @@ namespace GestionAssociatifERP.Services
         {
             var situationPersonnelle = await _situationPersonnelleRepository.GetByIdAsync(id);
             if (situationPersonnelle == null)
-                throw new Exception("Aucune situation personnelle correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune situation personnelle correspondante n'a été trouvée.");
 
             return _mapper.Map<SituationPersonnelleDto>(situationPersonnelle);
         }
@@ -54,11 +55,11 @@ namespace GestionAssociatifERP.Services
         public async Task UpdateSituationPersonnelleAsync(int id, UpdateSituationPersonnelleDto situationPersonnelleDto)
         {
             if (id != situationPersonnelleDto.Id)
-                throw new Exception("L'identifiant de la situation personnelle ne correspond pas à celui de l'objet envoyé.");
+                throw new BadRequestException("L'identifiant de la situation personnelle ne correspond pas à celui de l'objet envoyé.");
 
             var situationPersonnelle = await _situationPersonnelleRepository.GetByIdAsync(id);
             if (situationPersonnelle == null)
-                throw new Exception("Aucune situation personnelle correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune situation personnelle correspondante n'a été trouvée.");
 
             _mapper.Map(situationPersonnelleDto, situationPersonnelle);
 
@@ -69,7 +70,7 @@ namespace GestionAssociatifERP.Services
         {
             var situationPersonnelle = await _situationPersonnelleRepository.GetByIdAsync(id);
             if (situationPersonnelle == null)
-                throw new Exception("Aucune situation personnelle correspondante n'a été trouvée.");
+                throw new NotFoundException("Aucune situation personnelle correspondante n'a été trouvée.");
 
             await _situationPersonnelleRepository.DeleteAsync(id);
         }

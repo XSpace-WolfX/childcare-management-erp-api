@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -24,7 +25,7 @@ namespace GestionAssociatifERP.Services
         {
             var exists = await _enfantRepository.ExistsAsync(e => e.Id == enfantId);
             if (!exists)
-                throw new Exception("L'enfant spécifié n'existe pas.");
+                throw new NotFoundException("L'enfant spécifié n'existe pas.");
 
             var linkPersonneAutoriseeEnfant = await _personneAutoriseeEnfantRepository.GetPersonnesAutoriseesByEnfantIdAsync(enfantId);
 
@@ -35,7 +36,7 @@ namespace GestionAssociatifERP.Services
         {
             var exists = await _personneAutoriseeRepository.ExistsAsync(pa => pa.Id == personneAutoriseeId);
             if (!exists)
-                throw new Exception("La personne autorisée spécifiée n'existe pas.");
+                throw new NotFoundException("La personne autorisée spécifiée n'existe pas.");
 
             var linkPersonneAutoriseeEnfant = await _personneAutoriseeEnfantRepository.GetEnfantsByPersonneAutoriseeIdAsync(personneAutoriseeId);
 
@@ -50,11 +51,11 @@ namespace GestionAssociatifERP.Services
         public async Task<LinkPersonneAutoriseeEnfantDto> CreateLinkPersonneAutoriseeEnfantAsync(CreateLinkPersonneAutoriseeEnfantDto personneAutoriseeEnfantDto)
         {
             if (!await _personneAutoriseeRepository.ExistsAsync(pa => pa.Id == personneAutoriseeEnfantDto.PersonneAutoriseeId))
-                throw new Exception("La personne autorisée spécifiée n'existe pas.");
+                throw new NotFoundException("La personne autorisée spécifiée n'existe pas.");
             else if (!await _enfantRepository.ExistsAsync(e => e.Id == personneAutoriseeEnfantDto.EnfantId))
-                throw new Exception("L'enfant spécifié n'existe pas.");
+                throw new NotFoundException("L'enfant spécifié n'existe pas.");
             else if (await _personneAutoriseeEnfantRepository.LinkExistsAsync(personneAutoriseeEnfantDto.PersonneAutoriseeId, personneAutoriseeEnfantDto.EnfantId))
-                throw new Exception("Ce lien existe déjà entre cette personne autorisée et cet enfant.");
+                throw new ConflictException("Ce lien existe déjà entre cette personne autorisée et cet enfant.");
 
             var personneAutoriseeEnfant = _mapper.Map<PersonneAutoriseeEnfant>(personneAutoriseeEnfantDto);
             if (personneAutoriseeEnfant == null)
@@ -71,12 +72,9 @@ namespace GestionAssociatifERP.Services
 
         public async Task UpdateLinkPersonneAutoriseeEnfantAsync(UpdateLinkPersonneAutoriseeEnfantDto personneAutoriseeEnfantDto)
         {
-            if (personneAutoriseeEnfantDto == null) // TODO dans le controller
-                throw new Exception("Le lien envoyé est vide");
-
             var personneAutoriseeEnfant = await _personneAutoriseeEnfantRepository.GetLinkAsync(personneAutoriseeEnfantDto.PersonneAutoriseeId, personneAutoriseeEnfantDto.EnfantId);
             if (personneAutoriseeEnfant == null)
-                throw new Exception("Le lien Personne Autorisée / Enfant n'existe pas.");
+                throw new NotFoundException("Le lien Personne Autorisée / Enfant n'existe pas.");
 
             _mapper.Map(personneAutoriseeEnfantDto, personneAutoriseeEnfant);
 
@@ -86,7 +84,7 @@ namespace GestionAssociatifERP.Services
         public async Task RemoveLinkPersonneAutoriseeEnfantAsync(int enfantId, int personneAutoriseeId)
         {
             if (!await _personneAutoriseeEnfantRepository.LinkExistsAsync(personneAutoriseeId, enfantId))
-                throw new Exception("Le lien Personne Autorisée / Enfant n'existe pas.");
+                throw new NotFoundException("Le lien Personne Autorisée / Enfant n'existe pas.");
 
             await _personneAutoriseeEnfantRepository.RemoveLinkAsync(personneAutoriseeId, enfantId);
         }

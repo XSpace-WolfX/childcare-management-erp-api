@@ -87,9 +87,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/enfants/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -169,9 +170,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/enfants/9999/with-responsables");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -249,9 +251,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/enfants/9999/with-personnes-autorisees");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -327,9 +330,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/enfants/9999/with-donnees-supplementaires");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -357,22 +361,6 @@ namespace GestionAssociatifERP.IntegrationTests
             created.ShouldNotBeNull();
             created.Nom.ShouldBe("Camille");
             created.Civilite.ShouldBe("mme");
-        }
-
-        [Fact]
-        public async Task CreateEnfant_ShouldReturnBadRequest_WhenDtoIsNull()
-        {
-            // Arrange
-            using var factory = new CustomWebApplicationFactory();
-            var client = factory.CreateClient();
-
-            HttpContent nullBody = JsonContent.Create<object?>(null);
-
-            // Act
-            var response = await client.PostAsync("/api/v1/enfants", nullBody);
-
-            // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -423,9 +411,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/enfants/1", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.BadRequest);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            exception.Detail.ShouldBe("L'identifiant de l'enfant ne correspond pas à celui de l'objet envoyé.");
         }
 
         [Fact]
@@ -444,9 +433,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/enfants/9999", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -481,9 +471,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/enfants/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun enfant correspondant n'a été trouvé.");
         }
     }
 }

@@ -63,10 +63,8 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldHaveSingleItem();
-            result.Data.First().Affiliation.ShouldBe("Père");
+            result.ShouldHaveSingleItem();
+            result.First().Affiliation.ShouldBe("Père");
         }
 
         [Fact]
@@ -78,12 +76,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetResponsablesByEnfantIdAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.GetResponsablesByEnfantIdAsync(1));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'enfant spécifié n'existe pas");
+            exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -107,8 +103,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeEmpty();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -142,10 +137,8 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldHaveSingleItem();
-            result.Data.First().Affiliation.ShouldBe("Tuteur");
+            result.ShouldHaveSingleItem();
+            result.First().Affiliation.ShouldBe("Tuteur");
         }
 
         [Fact]
@@ -157,12 +150,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetEnfantsByResponsableIdAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.GetEnfantsByResponsableIdAsync(1));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Le responsable spécifié n'existe pas");
+            exception.Message.ShouldBe("Le responsable spécifié n'existe pas.");
         }
 
         [Fact]
@@ -186,8 +177,7 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeEmpty();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -202,9 +192,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _linkResponsableEnfantService.ExistsLinkResponsableEnfantAsync(1, 2);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeTrue();
+            result.ShouldBeTrue();
         }
 
         [Fact]
@@ -219,9 +207,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _linkResponsableEnfantService.ExistsLinkResponsableEnfantAsync(1, 2);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldBeFalse();
+            result.ShouldBeFalse();
         }
 
         [Fact]
@@ -289,11 +275,9 @@ namespace GestionAssociatifERP.UnitTests.Services
 
             // Assert
             result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ResponsableId.ShouldBe(newLinkResponsableEnfantDto.ResponsableId);
-            result.Data.EnfantId.ShouldBe(newLinkResponsableEnfantDto.EnfantId);
-            result.Data.Affiliation.ShouldBe("Mère");
+            result.ResponsableId.ShouldBe(newLinkResponsableEnfantDto.ResponsableId);
+            result.EnfantId.ShouldBe(newLinkResponsableEnfantDto.EnfantId);
+            result.Affiliation.ShouldBe("Mère");
         }
 
         [Fact]
@@ -311,12 +295,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'enfant spécifié n'existe pas");
+            exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -334,12 +316,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Le responsable spécifié n'existe pas");
+            exception.Message.ShouldBe("Le responsable spécifié n'existe pas.");
         }
 
         [Fact]
@@ -361,12 +341,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Ce lien existe déjà entre ce responsable et cet enfant");
+            exception.Message.ShouldBe("Ce lien existe déjà entre ce responsable et cet enfant.");
         }
 
         [Fact]
@@ -397,12 +375,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Erreur lors de la création du lien Responsable / Enfant : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création du lien Responsable / Enfant : Le Mapping a échoué.");
         }
 
         [Fact]
@@ -448,13 +424,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Échec de la création du lien Responsable / Enfant");
-            result.Data.ShouldBeNull();
+            exception.Message.ShouldBe("Échec de la création du lien Responsable / Enfant.");
         }
 
         [Fact]
@@ -488,11 +461,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto));
         }
 
         [Fact]
@@ -506,12 +477,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun lien Responsable / Enfant trouvé à mettre à jour");
+            exception.Message.ShouldBe("Aucun lien Responsable / Enfant trouvé à mettre à jour.");
         }
 
         [Fact]
@@ -527,11 +496,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2));
         }
 
         [Fact]
@@ -543,12 +510,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun lien Responsable / Enfant trouvé à supprimer");
+            exception.Message.ShouldBe("Aucun lien Responsable / Enfant trouvé à supprimer.");
         }
     }
 }

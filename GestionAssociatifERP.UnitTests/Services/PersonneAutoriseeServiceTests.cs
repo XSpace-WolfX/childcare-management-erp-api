@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.GetAllPersonnesAutoriseesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(e => e.Nom == "Doe");
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(e => e.Nom == "Doe");
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.GetAllPersonnesAutoriseesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,11 +96,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.GetPersonneAutoriseeAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
         }
 
         [Fact]
@@ -114,12 +111,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var result = await _personneAutoriseeService.GetPersonneAutoriseeAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetPersonneAutoriseeAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -162,15 +157,14 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.Enfants.ShouldNotBeNull();
-            result.Data.Enfants.ShouldNotBeEmpty();
-            result.Data.Enfants.Count.ShouldBe(2);
-            result.Data.Enfants.ShouldContain(e => e.Prenom == "Jean");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.Enfants.ShouldNotBeNull();
+            result.Enfants.ShouldNotBeEmpty();
+            result.Enfants.Count.ShouldBe(2);
+            result.Enfants.ShouldContain(e => e.Prenom == "Jean");
         }
 
         [Fact]
@@ -205,13 +199,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.Enfants.ShouldNotBeNull();
-            result.Data.Enfants.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.Enfants.ShouldNotBeNull();
+            result.Enfants.ShouldBeEmpty();
         }
 
         [Fact]
@@ -223,12 +216,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var result = await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -259,11 +250,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _personneAutoriseeService.CreatePersonneAutoriseeAsync(newPersonneAutoriseeDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.AddAsync(personneAutorisee), Times.Once);
         }
@@ -279,12 +269,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((PersonneAutorisee)null!);
 
             // Act
-            var result = await _personneAutoriseeService.CreatePersonneAutoriseeAsync(newPersonneAutoriseeDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.CreatePersonneAutoriseeAsync(newPersonneAutoriseeDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création de la personne autorisée : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création de la personne autorisée : Le Mapping a échoué.");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<PersonneAutorisee>()), Times.Never);
         }
@@ -310,11 +298,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.UpdateAsync(personneAutorisee), Times.Once);
         }
@@ -327,12 +313,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updatePersonneAutoriseeDto = new UpdatePersonneAutoriseeDto { Id = 2, Prenom = "John", Nom = "Doe" };
 
             // Act
-            var result = await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé.");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<PersonneAutorisee>()), Times.Never);
         }
@@ -349,12 +333,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var result = await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<PersonneAutorisee>()), Times.Never);
         }
@@ -375,11 +357,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id));
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -395,12 +375,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var result = await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

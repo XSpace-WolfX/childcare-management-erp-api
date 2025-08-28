@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _informationFinanciereService.GetAllInformationsFinancieresAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(e => e.ResponsableId == 100);
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(e => e.ResponsableId == 100);
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _informationFinanciereService.GetAllInformationsFinancieresAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,9 +96,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _informationFinanciereService.GetInformationFinanciereAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ResponsableId.ShouldBe(100);
+            result.ShouldNotBeNull();
+            result.ResponsableId.ShouldBe(100);
         }
 
         [Fact]
@@ -112,12 +109,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.GetInformationFinanciereAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _informationFinanciereService.GetInformationFinanciereAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -148,9 +143,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _informationFinanciereService.CreateInformationFinanciereAsync(newInformationFinanciereDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ResponsableId.ShouldBe(100);
+            result.ShouldNotBeNull();
+            result.ResponsableId.ShouldBe(100);
 
             _informationFinanciereRepositoryMock.Verify(repo => repo.AddAsync(informationFinanciere), Times.Once);
         }
@@ -166,12 +160,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((InformationFinanciere)null!);
 
             // Act
-            var result = await _informationFinanciereService.CreateInformationFinanciereAsync(newInformationFinanciereDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _informationFinanciereService.CreateInformationFinanciereAsync(newInformationFinanciereDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création de l'information financière : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création de l'information financière : Le Mapping a échoué.");
 
             _informationFinanciereRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<InformationFinanciere>()), Times.Never);
         }
@@ -197,11 +189,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto));
 
             _informationFinanciereRepositoryMock.Verify(r => r.UpdateAsync(informationFinanciere), Times.Once);
         }
@@ -214,12 +204,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updateInformationFinanciereDto = new UpdateInformationFinanciereDto { Id = 3, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant de l'information financière ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant de l'information financière ne correspond pas à celui de l'objet envoyé.");
 
             _informationFinanciereRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<InformationFinanciere>()), Times.Never);
         }
@@ -236,12 +224,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée.");
 
             _informationFinanciereRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<InformationFinanciere>()), Times.Never);
         }
@@ -262,11 +248,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _informationFinanciereService.DeleteInformationFinanciereAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _informationFinanciereService.DeleteInformationFinanciereAsync(id));
 
             _informationFinanciereRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -282,12 +266,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.DeleteInformationFinanciereAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _informationFinanciereService.DeleteInformationFinanciereAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée");
+            exception.Message.ShouldBe("Aucune information financière correspondante n'a été trouvée.");
 
             _informationFinanciereRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

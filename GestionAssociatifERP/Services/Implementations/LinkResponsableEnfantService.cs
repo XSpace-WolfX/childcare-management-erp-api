@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
+using GestionAssociatifERP.Helpers;
 using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 
@@ -24,7 +25,7 @@ namespace GestionAssociatifERP.Services
         {
             var exists = await _enfantRepository.ExistsAsync(e => e.Id == enfantId);
             if (!exists)
-                throw new Exception("L'enfant spécifié n'existe pas.");
+                throw new NotFoundException("L'enfant spécifié n'existe pas.");
 
             var linkResponsableEnfant = await _responsableEnfantRepository.GetResponsablesByEnfantIdAsync(enfantId);
 
@@ -35,7 +36,7 @@ namespace GestionAssociatifERP.Services
         {
             var exists = await _responsableRepository.ExistsAsync(r => r.Id == responsableId);
             if (!exists)
-                throw new Exception("Le responsable spécifié n'existe pas.");
+                throw new NotFoundException("Le responsable spécifié n'existe pas.");
 
             var linkResponsableEnfant = await _responsableEnfantRepository.GetEnfantsByResponsableIdAsync(responsableId);
 
@@ -50,11 +51,11 @@ namespace GestionAssociatifERP.Services
         public async Task<LinkResponsableEnfantDto> CreateLinkResponsableEnfantAsync(CreateLinkResponsableEnfantDto responsableEnfantDto)
         {
             if (!await _enfantRepository.ExistsAsync(e => e.Id == responsableEnfantDto.EnfantId))
-                throw new Exception("L'enfant spécifié n'existe pas.");
+                throw new NotFoundException("L'enfant spécifié n'existe pas.");
             else if (!await _responsableRepository.ExistsAsync(r => r.Id == responsableEnfantDto.ResponsableId))
-                throw new Exception("Le responsable spécifié n'existe pas.");
+                throw new NotFoundException("Le responsable spécifié n'existe pas.");
             else if (await _responsableEnfantRepository.LinkExistsAsync(responsableEnfantDto.ResponsableId, responsableEnfantDto.EnfantId))
-                throw new Exception("Ce lien existe déjà entre ce responsable et cet enfant.");
+                throw new ConflictException("Ce lien existe déjà entre ce responsable et cet enfant.");
 
             var responsableEnfant = _mapper.Map<ResponsableEnfant>(responsableEnfantDto);
             if (responsableEnfant == null)
@@ -71,12 +72,9 @@ namespace GestionAssociatifERP.Services
 
         public async Task UpdateLinkResponsableEnfantAsync(UpdateLinkResponsableEnfantDto responsableEnfantDto)
         {
-            if (responsableEnfantDto == null) // TODO dans le controller
-                throw new Exception("Le lien Responsable / Enfant envoyé est vide.");
-
             var responsableEnfant = await _responsableEnfantRepository.GetLinkAsync(responsableEnfantDto.ResponsableId, responsableEnfantDto.EnfantId);
             if (responsableEnfant == null)
-                throw new Exception("Aucun lien Responsable / Enfant trouvé à mettre à jour.");
+                throw new NotFoundException("Aucun lien Responsable / Enfant trouvé à mettre à jour.");
 
             _mapper.Map(responsableEnfantDto, responsableEnfant);
 
@@ -86,7 +84,7 @@ namespace GestionAssociatifERP.Services
         public async Task RemoveLinkResponsableEnfantAsync(int enfantId, int responsableId)
         {
             if (!await _responsableEnfantRepository.LinkExistsAsync(responsableId, enfantId))
-                throw new Exception("Aucun lien Responsable / Enfant trouvé à supprimer.");
+                throw new NotFoundException("Aucun lien Responsable / Enfant trouvé à supprimer.");
 
             await _responsableEnfantRepository.RemoveLinkAsync(responsableId, enfantId);
         }

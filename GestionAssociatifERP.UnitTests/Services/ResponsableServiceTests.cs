@@ -49,10 +49,9 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetAllResponsablesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Count().ShouldBe(2);
-            result.Data.ShouldContain(e => e.Nom == "Doe");
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.ShouldContain(e => e.Nom == "Doe");
         }
 
         [Fact]
@@ -74,9 +73,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetAllResponsablesAsync();
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.ShouldBeEmpty();
         }
 
         [Fact]
@@ -98,9 +96,8 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
         }
 
         [Fact]
@@ -112,12 +109,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.GetResponsableAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -160,13 +155,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithInformationFinanciereAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.InformationFinanciere.ShouldNotBeNull();
-            result.Data.InformationFinanciere.Id.ShouldBe(1);
-            result.Data.InformationFinanciere.QuotientFamiliale.ShouldBe(1000);
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Nom.ShouldBe("Doe");
+            result.InformationFinanciere.ShouldNotBeNull();
+            result.InformationFinanciere.Id.ShouldBe(1);
+            result.InformationFinanciere.QuotientFamiliale.ShouldBe(1000);
         }
 
         [Fact]
@@ -200,11 +194,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithInformationFinanciereAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.InformationFinanciere.ShouldBeNull();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Nom.ShouldBe("Doe");
+            result.InformationFinanciere.ShouldBeNull();
         }
 
         [Fact]
@@ -216,12 +209,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.GetResponsableWithInformationFinanciereAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithInformationFinanciereAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -264,14 +255,13 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithSituationPersonnelleAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.SituationPersonnelle.ShouldNotBeNull();
-            result.Data.SituationPersonnelle.Id.ShouldBe(1);
-            result.Data.SituationPersonnelle.SituationFamiliale.ShouldBe("Célibataire");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.SituationPersonnelle.ShouldNotBeNull();
+            result.SituationPersonnelle.Id.ShouldBe(1);
+            result.SituationPersonnelle.SituationFamiliale.ShouldBe("Célibataire");
         }
 
         [Fact]
@@ -305,12 +295,11 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithSituationPersonnelleAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.SituationPersonnelle.ShouldBeNull();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.SituationPersonnelle.ShouldBeNull();
         }
 
         [Fact]
@@ -322,12 +311,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.GetResponsableWithSituationPersonnelleAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithSituationPersonnelleAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -370,14 +357,13 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithEnfantsAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.Enfants.ShouldNotBeNull();
-            result.Data.Enfants.Count.ShouldBe(2);
-            result.Data.Enfants.ShouldContain(e => e.Prenom == "Jane" && e.Nom == "Doe");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.Enfants.ShouldNotBeNull();
+            result.Enfants.Count.ShouldBe(2);
+            result.Enfants.ShouldContain(e => e.Prenom == "Jane" && e.Nom == "Doe");
         }
 
         [Fact]
@@ -412,13 +398,12 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.GetResponsableWithEnfantsAsync(1);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
-            result.Data.Enfants.ShouldNotBeNull();
-            result.Data.Enfants.ShouldBeEmpty();
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
+            result.Enfants.ShouldNotBeNull();
+            result.Enfants.ShouldBeEmpty();
         }
 
         [Fact]
@@ -430,12 +415,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.GetResponsableWithEnfantsAsync(1);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithEnfantsAsync(1));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -466,11 +449,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var result = await _responsableService.CreateResponsableAsync(newResponsableDto);
 
             // Assert
-            result.Success.ShouldBeTrue();
-            result.Data.ShouldNotBeNull();
-            result.Data.Id.ShouldBe(1);
-            result.Data.Prenom.ShouldBe("John");
-            result.Data.Nom.ShouldBe("Doe");
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(1);
+            result.Prenom.ShouldBe("John");
+            result.Nom.ShouldBe("Doe");
 
             _responsableRepositoryMock.Verify(repo => repo.AddAsync(responsable), Times.Once);
         }
@@ -486,12 +468,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((Responsable)null!);
 
             // Act
-            var result = await _responsableService.CreateResponsableAsync(newResponsableDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.CreateResponsableAsync(newResponsableDto));
 
             // Assert
-            result.Success.ShouldBeFalse();
-            result.Data.ShouldBeNull();
-            result.Message.ShouldBe("Erreur lors de la création du responsable : Le Mapping a échoué");
+            exception.Message.ShouldBe("Erreur lors de la création du responsable : Le Mapping a échoué.");
 
             _responsableRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Responsable>()), Times.Never);
         }
@@ -517,11 +497,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _responsableService.UpdateResponsableAsync(id, updateResponsableDto);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
 
             _responsableRepositoryMock.Verify(repo => repo.UpdateAsync(responsable), Times.Once);
         }
@@ -534,12 +512,10 @@ namespace GestionAssociatifERP.UnitTests.Services
             var updateResponsableDto = new UpdateResponsableDto { Id = 2, Prenom = "John", Nom = "Doe" };
 
             // Act
-            var result = await _responsableService.UpdateResponsableAsync(id, updateResponsableDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé");
+            exception.Message.ShouldBe("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé.");
 
             _responsableRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Responsable>()), Times.Never);
         }
@@ -556,12 +532,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.UpdateResponsableAsync(id, updateResponsableDto);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
 
             _responsableRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Responsable>()), Times.Never);
         }
@@ -582,11 +556,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _responsableService.DeleteResponsableAsync(id);
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeTrue();
+            await Should.NotThrowAsync(async () => await _responsableService.DeleteResponsableAsync(id));
 
             _responsableRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -602,12 +574,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var result = await _responsableService.DeleteResponsableAsync(id);
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.DeleteResponsableAsync(id));
 
             // Assert
-            result.ShouldNotBeNull();
-            result.Success.ShouldBeFalse();
-            result.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé");
+            exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
 
             _responsableRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
         }

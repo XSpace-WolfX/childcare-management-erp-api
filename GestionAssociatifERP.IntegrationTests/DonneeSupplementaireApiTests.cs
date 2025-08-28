@@ -89,9 +89,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/donneessupplementaires/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -115,22 +116,6 @@ namespace GestionAssociatifERP.IntegrationTests
             donneeSupplementaire.ShouldNotBeNull();
             donneeSupplementaire.Parametre.ShouldBe(dto.Parametre);
             donneeSupplementaire.Valeur.ShouldBe(dto.Valeur);
-        }
-
-        [Fact]
-        public async Task CreateDonneeSupplementaire_ShouldReturnBadRequest_WhenDtoIsNull()
-        {
-            // Arrange
-            using var factory = new CustomWebApplicationFactory();
-            var client = factory.CreateClient();
-
-            HttpContent nullBody = JsonContent.Create<object?>(null);
-
-            // Act
-            var response = await client.PostAsync("/api/v1/donneessupplementaires", nullBody);
-
-            // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -181,9 +166,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync($"/api/v1/donneessupplementaires/1", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.BadRequest);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            exception.Detail.ShouldBe("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé.");
         }
 
         [Fact]
@@ -202,9 +188,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync($"/api/v1/donneessupplementaires/9999", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
         }
 
         [Fact]
@@ -240,9 +227,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync("/api/v1/donneessupplementaires/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
         }
     }
 }

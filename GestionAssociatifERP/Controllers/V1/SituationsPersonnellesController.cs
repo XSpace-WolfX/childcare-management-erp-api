@@ -39,9 +39,6 @@ namespace GestionAssociatifERP.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateSituationPersonnelleDto situationPersonnelleDto)
         {
-            if (situationPersonnelleDto == null)
-                return BadRequest(new { Message = "Le corps de la requête ne peut pas être vide." });
-
             var result = await _situationPersonnelleService.CreateSituationPersonnelleAsync(situationPersonnelleDto);
 
             return CreatedAtAction(nameof(GetById), new { id = result!.Id }, result);

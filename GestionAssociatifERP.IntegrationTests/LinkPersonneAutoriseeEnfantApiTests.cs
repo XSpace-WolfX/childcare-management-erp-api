@@ -78,9 +78,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/linkpersonneautoriseeenfant/personne-autorisee/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("La personne autorisée spécifiée n'existe pas.");
         }
 
         [Fact]
@@ -152,9 +153,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/linkpersonneautoriseeenfant/enfant/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -258,24 +260,70 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task CreateLinkPersonneAutoriseeEnfant_ShouldReturnNotFound_WhenEnfantOrPersonneAutoriseeDoesNotExist()
+        public async Task CreateLinkPersonneAutoriseeEnfant_ShouldReturnNotFound_WhenPersonneAutoriseeDoesNotExist()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
+            var createEnfantDto = new CreateEnfantDto
+            {
+                Nom = "Test",
+                Prenom = "Enfant",
+                DateNaissance = DateOnly.FromDateTime(DateTime.Today.AddYears(-5)),
+                Civilite = "M"
+            };
+
+            var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", createEnfantDto);
+            enfantResponse.EnsureSuccessStatusCode();
+            var enfant = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
+
             var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
             {
-                EnfantId = 9999, // Non-existent Enfant ID
+                EnfantId = enfant!.Id,
                 PersonneAutoriseeId = 9999, // Non-existent Personne Autorisee ID
                 Affiliation = "TestAffiliation"
             };
 
             // Act
             var response = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("La personne autorisée spécifiée n'existe pas.");
+        }
+
+        [Fact]
+        public async Task CreateLinkPersonneAutoriseeEnfant_ShouldReturnNotFound_WhenEnfantDoesNotExist()
+        {
+            // Arrange
+            using var factory = new CustomWebApplicationFactory();
+            var client = factory.CreateClient();
+
+            var createPersonneDto = new CreatePersonneAutoriseeDto
+            {
+                Nom = "Test",
+                Prenom = "Autorisee",
+                Telephone = "0600000000"
+            };
+
+            var personneResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", createPersonneDto);
+            personneResponse.EnsureSuccessStatusCode();
+            var personne = await personneResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+
+            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            {
+                EnfantId = 9999, // Non-existent Enfant ID
+                PersonneAutoriseeId = personne!.Id,
+                Affiliation = "TestAffiliation"
+            };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
+
+            // Assert
+            exception.Detail.ShouldBe("L'enfant spécifié n'existe pas.");
         }
 
         [Fact]
@@ -309,9 +357,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act - Second creation should fail
             var secondResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
+            var exception = await AssertProblemDetails.AssertProblem(secondResponse, HttpStatusCode.Conflict);
 
             // Assert
-            secondResponse.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+            exception.Detail.ShouldBe("Ce lien existe déjà entre cette personne autorisée et cet enfant.");
         }
 
         [Fact]
@@ -373,9 +422,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.PutAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");
         }
 
         [Fact]
@@ -422,9 +472,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.DeleteAsync("/api/v1/linkpersonneautoriseeenfant/personne-autorisee/9999/enfant/9999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");
         }
     }
 }

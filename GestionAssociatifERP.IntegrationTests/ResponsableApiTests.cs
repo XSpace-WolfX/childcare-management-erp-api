@@ -87,9 +87,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/responsables/999");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -168,9 +169,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/responsables/9999/with-enfants");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -242,9 +244,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/responsables/9999/with-information-financiere");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -317,9 +320,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var response = await client.GetAsync("/api/v1/responsables/9999/with-situation-personnelle");
+            var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -342,22 +346,6 @@ namespace GestionAssociatifERP.IntegrationTests
             createdResponsable.ShouldNotBeNull();
             createdResponsable.Nom.ShouldBe("Martin");
             createdResponsable.Civilite.ShouldBe("m");
-        }
-
-        [Fact]
-        public async Task CreateResponsable_ShouldReturnBadRequest_WhenDtoIsNull()
-        {
-            // Arrange
-            using var factory = new CustomWebApplicationFactory();
-            var client = factory.CreateClient();
-
-            HttpContent nullBody = JsonContent.Create<object?>(null);
-
-            // Act
-            var response = await client.PostAsync("/api/v1/responsables", nullBody);
-
-            // Assert
-            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -410,9 +398,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var updateResponse = await client.PutAsJsonAsync($"/api/v1/responsables/1", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(updateResponse, HttpStatusCode.BadRequest);
 
             // Assert
-            updateResponse.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            exception.Detail.ShouldBe("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé.");
         }
 
         [Fact]
@@ -431,9 +420,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var updateResponse = await client.PutAsJsonAsync($"/api/v1/responsables/9999", updateDto);
+            var exception = await AssertProblemDetails.AssertProblem(updateResponse, HttpStatusCode.NotFound);
 
             // Assert
-            updateResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
 
         [Fact]
@@ -468,9 +458,10 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Act
             var deleteResponse = await client.DeleteAsync("/api/v1/responsables/9999");
+            var exception = await AssertProblemDetails.AssertProblem(deleteResponse, HttpStatusCode.NotFound);
 
             // Assert
-            deleteResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            exception.Detail.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
         }
     }
 }
