@@ -66,9 +66,26 @@ namespace GestionAssociatifERP.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEnfantDto enfantDto)
         {
-            var result = await _enfantService.CreateEnfantAsync(enfantDto);
+            try
+            {
+                Console.WriteLine($"CIVILITÉ REÇUE = {enfantDto.Civilite}");
+                var result = await _enfantService.CreateEnfantAsync(enfantDto);
 
             return CreatedAtAction(nameof(GetById), new { id = result!.Id }, result);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                var inner = ex.InnerException?.Message;
+
+                return StatusCode(500, new
+                {
+                    message = "Erreur interne lors de la création",
+                    detail = message,
+                    innerException = inner,
+                    stackTrace = ex.StackTrace
+                });
+            }
         }
 
         // PUT: api/v1/enfants/{id}

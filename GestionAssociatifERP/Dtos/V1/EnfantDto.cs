@@ -1,4 +1,6 @@
-﻿namespace GestionAssociatifERP.Dtos.V1
+﻿using System.Text.Json.Serialization;
+
+namespace GestionAssociatifERP.Dtos.V1
 {
     public class EnfantDto
     {
@@ -60,6 +62,7 @@
 
     public class CreateEnfantDto
     {
+        [JsonPropertyName("gender")]
         public string Civilite { get; set; } = string.Empty;
         public string? Nom { get; set; }
         public string? Prenom { get; set; }
