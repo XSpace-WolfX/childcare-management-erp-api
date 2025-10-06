@@ -20,6 +20,17 @@ namespace GestionAssociatifERP
             // Add services to the container.
             builder.Services.AddControllers();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy
+                        .AllowAnyOrigin() // En prod, tu mettras .WithOrigins("https://ton-domaine.fr")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             // Ajoute le versioning avec l'explorateur Swagger
             builder.Services.AddApiVersioning(options =>
             {
@@ -96,6 +107,8 @@ namespace GestionAssociatifERP
             app.UseStatusCodePages();
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
