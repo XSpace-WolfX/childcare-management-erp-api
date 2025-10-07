@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class DonneeSupplementaireServiceTests
     {
-        private readonly IDonneeSupplementaireService _donneeSupplementaireService;
-        private readonly Mock<IDonneeSupplementaireRepository> _donneeSupplementaireRepositoryMock;
+        private readonly IAdditionalDataService _donneeSupplementaireService;
+        private readonly Mock<IAdditionalDataRepository> _donneeSupplementaireRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public DonneeSupplementaireServiceTests()
         {
-            _donneeSupplementaireRepositoryMock = new Mock<IDonneeSupplementaireRepository>();
+            _donneeSupplementaireRepositoryMock = new Mock<IAdditionalDataRepository>();
             _mapperMock = new Mock<IMapper>();
-            _donneeSupplementaireService = new DonneeSupplementaireService(_donneeSupplementaireRepositoryMock.Object, _mapperMock.Object);
+            _donneeSupplementaireService = new AdditionalDataService(_donneeSupplementaireRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, EnfantId = 7, Parametre = "Scolarisé", Type = "bool" }
             };
 
-            var donneesSupplementairesDtos = new List<DonneeSupplementaireDto>
+            var donneesSupplementairesDtos = new List<AdditionalDataDto>
             {
-                new() { Id = 1, EnfantId = 3, Parametre = "Allergie" },
-                new() { Id = 2, EnfantId = 7, Parametre = "Scolarisé", Type = "bool" }
+                new() { Id = 1, ChildId = 3, ParamName = "Allergie" },
+                new() { Id = 2, ChildId = 7, ParamName = "Scolarisé", ParamType = "bool" }
             };
 
             _donneeSupplementaireRepositoryMock
@@ -42,11 +42,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(donneesSupplementaires);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<DonneeSupplementaireDto>>(donneesSupplementaires))
+                .Setup(m => m.Map<IEnumerable<AdditionalDataDto>>(donneesSupplementaires))
                 .Returns(donneesSupplementairesDtos);
 
             // Act
-            var result = await _donneeSupplementaireService.GetAllDonneesSupplementairesAsync();
+            var result = await _donneeSupplementaireService.GetAllAdditionalDatasAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -60,18 +60,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var donneesSupplementaires = new List<DonneeSupplementaire>();
-            var donneesSupplementairesDtos = new List<DonneeSupplementaireDto>();
+            var donneesSupplementairesDtos = new List<AdditionalDataDto>();
 
             _donneeSupplementaireRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(donneesSupplementaires);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<DonneeSupplementaireDto>>(donneesSupplementaires))
+                .Setup(m => m.Map<IEnumerable<AdditionalDataDto>>(donneesSupplementaires))
                 .Returns(donneesSupplementairesDtos);
 
             // Act
-            var result = await _donneeSupplementaireService.GetAllDonneesSupplementairesAsync();
+            var result = await _donneeSupplementaireService.GetAllAdditionalDatasAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -84,18 +84,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var donneeSupplementaire = new DonneeSupplementaire { Id = 1, EnfantId = 3, Parametre = "Allergie" };
-            var donneeSupplementaireDto = new DonneeSupplementaireDto { Id = 1, EnfantId = 3, Parametre = "Allergie" };
+            var donneeSupplementaireDto = new AdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Allergie" };
 
             _donneeSupplementaireRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(donneeSupplementaire);
 
             _mapperMock
-                .Setup(m => m.Map<DonneeSupplementaireDto>(donneeSupplementaire))
+                .Setup(m => m.Map<AdditionalDataDto>(donneeSupplementaire))
                 .Returns(donneeSupplementaireDto);
 
             // Act
-            var result = await _donneeSupplementaireService.GetDonneeSupplementaireAsync(1);
+            var result = await _donneeSupplementaireService.GetAdditionalDataAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -112,7 +112,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.GetDonneeSupplementaireAsync(1);
+            var result = await _donneeSupplementaireService.GetAdditionalDataAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -124,9 +124,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateDonneeSupplementaireAsync_WhenDonneeSupplementaireIsCreated_ShouldReturnCreatedDto()
         {
             // Arrange
-            var newDonneeSupplementaireDto = new CreateDonneeSupplementaireDto { EnfantId = 3, Parametre = "Allergie" };
+            var newDonneeSupplementaireDto = new CreateAdditionalDataDto { ChildId = 3, ParamName = "Allergie" };
             var donneeSupplementaire = new DonneeSupplementaire { Id = 1, EnfantId = 3, Parametre = "Allergie" };
-            var createdDonneeSupplementaireDto = new DonneeSupplementaireDto { Id = 1, EnfantId = 3, Parametre = "Allergie" };
+            var createdDonneeSupplementaireDto = new AdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Allergie" };
 
             _mapperMock
                 .Setup(m => m.Map<DonneeSupplementaire>(newDonneeSupplementaireDto))
@@ -141,11 +141,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(donneeSupplementaire);
 
             _mapperMock
-                .Setup(m => m.Map<DonneeSupplementaireDto>(donneeSupplementaire))
+                .Setup(m => m.Map<AdditionalDataDto>(donneeSupplementaire))
                 .Returns(createdDonneeSupplementaireDto);
 
             // Act
-            var result = await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(newDonneeSupplementaireDto);
+            var result = await _donneeSupplementaireService.CreateAdditionalDataAsync(newDonneeSupplementaireDto);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -157,14 +157,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateDonneeSupplementaireAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newDonneeSupplementaireDto = new CreateDonneeSupplementaireDto { EnfantId = 3, Parametre = "Allergie" };
+            var newDonneeSupplementaireDto = new CreateAdditionalDataDto { ChildId = 3, ParamName = "Allergie" };
 
             _mapperMock
                 .Setup(m => m.Map<DonneeSupplementaire>(newDonneeSupplementaireDto))
                 .Returns((DonneeSupplementaire)null!);
 
             // Act
-            var result = await _donneeSupplementaireService.CreateDonneeSupplementaireAsync(newDonneeSupplementaireDto);
+            var result = await _donneeSupplementaireService.CreateAdditionalDataAsync(newDonneeSupplementaireDto);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -180,7 +180,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Arrange
             var id = 1;
             var donneeSupplementaire = new DonneeSupplementaire { Id = id, EnfantId = 3, Parametre = "Scolarisé" };
-            var updateDonneeSupplementaireDto = new UpdateDonneeSupplementaireDto { Id = 1, EnfantId = 3, Parametre = "Scolarisé" };
+            var updateDonneeSupplementaireDto = new UpdateAdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Scolarisé" };
 
             _donneeSupplementaireRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
@@ -195,7 +195,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
+            var result = await _donneeSupplementaireService.UpdateAdditionalDataAsync(id, updateDonneeSupplementaireDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -209,10 +209,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateDonneeSupplementaireDto = new UpdateDonneeSupplementaireDto { Id = 6, EnfantId = 3, Parametre = "Scolarisé" };
+            var updateDonneeSupplementaireDto = new UpdateAdditionalDataDto { Id = 6, ChildId = 3, ParamName = "Scolarisé" };
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
+            var result = await _donneeSupplementaireService.UpdateAdditionalDataAsync(id, updateDonneeSupplementaireDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -227,14 +227,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateDonneeSupplementaireDto = new UpdateDonneeSupplementaireDto { Id = id, EnfantId = 3, Parametre = "Scolarisé" };
+            var updateDonneeSupplementaireDto = new UpdateAdditionalDataDto { Id = id, ChildId = 3, ParamName = "Scolarisé" };
 
             _donneeSupplementaireRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.UpdateDonneeSupplementaireAsync(id, updateDonneeSupplementaireDto);
+            var result = await _donneeSupplementaireService.UpdateAdditionalDataAsync(id, updateDonneeSupplementaireDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -260,7 +260,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id);
+            var result = await _donneeSupplementaireService.DeleteAdditionalDataAsync(id);
 
             // Assert
             result.ShouldNotBeNull();
@@ -280,7 +280,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as DonneeSupplementaire);
 
             // Act
-            var result = await _donneeSupplementaireService.DeleteDonneeSupplementaireAsync(id);
+            var result = await _donneeSupplementaireService.DeleteAdditionalDataAsync(id);
 
             // Assert
             result.ShouldNotBeNull();

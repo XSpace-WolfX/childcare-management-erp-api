@@ -14,22 +14,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Lina", Civilite = "mme" };
-            var responsable = new CreateResponsableDto { Nom = "Sophie", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Lina", Gender = "mme" };
+            var responsable = new CreateGuardianDto { LastName = "Sophie", Title = "mme" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                ResponsableId = responsableCreated!.Id,
-                Affiliation = "Mère"
+                ChildId = enfantCreated!.Id,
+                GuardianId = responsableCreated!.Id,
+                Relationship = "Mère"
             };
 
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
@@ -40,9 +40,9 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var responsables = await response.Content.ReadFromJsonAsync<List<LinkResponsableEnfantDto>>();
+            var responsables = await response.Content.ReadFromJsonAsync<List<LinkGuardianChildDto>>();
             responsables.ShouldNotBeNull();
-            responsables.ShouldContain(r => r.ResponsableId == responsableCreated.Id);
+            responsables.ShouldContain(r => r.GuardianId == responsableCreated.Id);
         }
 
         [Fact]
@@ -52,17 +52,17 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Noa", Civilite = "non_specifie" };
+            var enfant = new CreateChildDto { LastName = "Noa", Gender = "non_specifie" };
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             enfantResponse.EnsureSuccessStatusCode();
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkresponsableenfant/enfant/{enfantCreated!.Id}");
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var responsables = await response.Content.ReadFromJsonAsync<List<LinkResponsableEnfantDto>>();
+            var responsables = await response.Content.ReadFromJsonAsync<List<LinkGuardianChildDto>>();
             responsables.ShouldNotBeNull();
             responsables.ShouldBeEmpty();
         }
@@ -88,22 +88,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Émile", Civilite = "m" };
-            var responsable = new CreateResponsableDto { Nom = "Nathalie", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Émile", Gender = "m" };
+            var responsable = new CreateGuardianDto { LastName = "Nathalie", Title = "mme" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                ResponsableId = responsableCreated!.Id,
-                Affiliation = "Tante"
+                ChildId = enfantCreated!.Id,
+                GuardianId = responsableCreated!.Id,
+                Relationship = "Tante"
             };
 
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
@@ -114,9 +114,9 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var enfants = await response.Content.ReadFromJsonAsync<List<LinkResponsableEnfantDto>>();
+            var enfants = await response.Content.ReadFromJsonAsync<List<LinkGuardianChildDto>>();
             enfants.ShouldNotBeNull();
-            enfants.ShouldContain(e => e.EnfantId == enfantCreated.Id);
+            enfants.ShouldContain(e => e.ChildId == enfantCreated.Id);
         }
 
         [Fact]
@@ -126,17 +126,17 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var responsable = new CreateResponsableDto { Nom = "Julie", Civilite = "mme" };
+            var responsable = new CreateGuardianDto { LastName = "Julie", Title = "mme" };
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             responsableResponse.EnsureSuccessStatusCode();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkresponsableenfant/responsable/{responsableCreated!.Id}");
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var enfants = await response.Content.ReadFromJsonAsync<List<LinkResponsableEnfantDto>>();
+            var enfants = await response.Content.ReadFromJsonAsync<List<LinkGuardianChildDto>>();
             enfants.ShouldNotBeNull();
             enfants.ShouldBeEmpty();
         }
@@ -162,22 +162,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Élise", Civilite = "mme" };
-            var responsable = new CreateResponsableDto { Nom = "Paul", Civilite = "m" };
+            var enfant = new CreateChildDto { LastName = "Élise", Gender = "mme" };
+            var responsable = new CreateGuardianDto { LastName = "Paul", Title = "m" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                ResponsableId = responsableCreated!.Id,
-                Affiliation = "Mère"
+                ChildId = enfantCreated!.Id,
+                GuardianId = responsableCreated!.Id,
+                Relationship = "Mère"
             };
 
             var postLink = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
@@ -199,16 +199,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Hugo", Civilite = "m" };
-            var responsable = new CreateResponsableDto { Nom = "Claire", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Hugo", Gender = "m" };
+            var responsable = new CreateGuardianDto { LastName = "Claire", Title = "mme" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkresponsableenfant/responsable/{responsableCreated!.Id}/enfant/{enfantCreated!.Id}");
@@ -226,22 +226,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Camille", Civilite = "mme" };
-            var responsable = new CreateResponsableDto { Nom = "Jean", Civilite = "m" };
+            var enfant = new CreateChildDto { LastName = "Camille", Gender = "mme" };
+            var responsable = new CreateGuardianDto { LastName = "Jean", Title = "m" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var dto = new CreateLinkResponsableEnfantDto
+            var dto = new CreateLinkGuardianChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                ResponsableId = responsableCreated!.Id,
-                Affiliation = "Père"
+                ChildId = enfantCreated!.Id,
+                GuardianId = responsableCreated!.Id,
+                Relationship = "Père"
             };
 
             // Act
@@ -249,11 +249,11 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var result = await response.Content.ReadFromJsonAsync<LinkResponsableEnfantDto>();
+            var result = await response.Content.ReadFromJsonAsync<LinkGuardianChildDto>();
             result.ShouldNotBeNull();
-            result.EnfantId.ShouldBe(dto.EnfantId);
-            result.ResponsableId.ShouldBe(dto.ResponsableId);
-            result.Affiliation.ShouldBe("Père");
+            result.ChildId.ShouldBe(dto.ChildId);
+            result.GuardianId.ShouldBe(dto.GuardianId);
+            result.Relationship.ShouldBe("Père");
         }
 
         [Fact]
@@ -263,22 +263,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Julien", Civilite = "m" };
-            var responsable = new CreateResponsableDto { Nom = "Lucie", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Julien", Gender = "m" };
+            var responsable = new CreateGuardianDto { LastName = "Lucie", Title = "mme" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var responsableResponse = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             enfantResponse.EnsureSuccessStatusCode();
             responsableResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var responsableCreated = await responsableResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var dto = new CreateLinkResponsableEnfantDto
+            var dto = new CreateLinkGuardianChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                ResponsableId = responsableCreated!.Id,
-                Affiliation = "Mère"
+                ChildId = enfantCreated!.Id,
+                GuardianId = responsableCreated!.Id,
+                Relationship = "Mère"
             };
 
             // First creation
@@ -299,32 +299,32 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
             
-            var enfant = new CreateEnfantDto { Nom = "Axel", Civilite = "m" };
-            var responsable = new CreateResponsableDto { Nom = "Marine", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Axel", Gender = "m" };
+            var responsable = new CreateGuardianDto { LastName = "Marine", Title = "mme" };
 
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             postEnfant.EnsureSuccessStatusCode();
             postResponsable.EnsureSuccessStatusCode();
 
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                ResponsableId = createdResponsable!.Id,
-                Affiliation = "Tante"
+                ChildId = createdEnfant!.Id,
+                GuardianId = createdResponsable!.Id,
+                Relationship = "Tante"
             };
 
             var postLink = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
             postLink.EnsureSuccessStatusCode();
 
-            var updateDto = new UpdateLinkResponsableEnfantDto
+            var updateDto = new UpdateLinkGuardianChildDto
             {
-                EnfantId = linkDto.EnfantId,
-                ResponsableId = linkDto.ResponsableId,
-                Affiliation = "Tuteur"
+                ChildId = linkDto.ChildId,
+                GuardianId = linkDto.GuardianId,
+                Relationship = "Tuteur"
             };
 
             // Act
@@ -341,11 +341,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateLinkResponsableEnfantDto
+            var updateDto = new UpdateLinkGuardianChildDto
             {
-                EnfantId = 999,
-                ResponsableId = 888,
-                Affiliation = "Tuteur"
+                ChildId = 999,
+                GuardianId = 888,
+                Relationship = "Tuteur"
             };
 
             // Act
@@ -362,22 +362,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Lucas", Civilite = "m" };
-            var responsable = new CreateResponsableDto { Nom = "Claire", Civilite = "mme" };
+            var enfant = new CreateChildDto { LastName = "Lucas", Gender = "m" };
+            var responsable = new CreateGuardianDto { LastName = "Claire", Title = "mme" };
 
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsable);
             postEnfant.EnsureSuccessStatusCode();
             postResponsable.EnsureSuccessStatusCode();
 
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                ResponsableId = createdResponsable!.Id,
-                Affiliation = "Père"
+                ChildId = createdEnfant!.Id,
+                GuardianId = createdResponsable!.Id,
+                Relationship = "Père"
             };
 
             var postLink = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);

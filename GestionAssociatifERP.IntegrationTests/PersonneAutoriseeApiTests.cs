@@ -16,7 +16,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/personnesautorisees";
-            var dto = new CreatePersonneAutoriseeDto { Nom = "Test", Prenom = "User" };
+            var dto = new CreateAuthorizedPersonDto { LastName = "Test", FirstName = "User" };
             var postResponse = await client.PostAsJsonAsync(url, dto);
             postResponse.EnsureSuccessStatusCode();
 
@@ -27,10 +27,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<PersonneAutoriseeDto>>();
+            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<AuthorizedPersonDto>>();
             personnesAutorisees.ShouldNotBeNull();
-            personnesAutorisees.ShouldContain(e => e.Nom == "Test");
-            personnesAutorisees.ShouldContain(e => e.Prenom == "User");
+            personnesAutorisees.ShouldContain(e => e.LastName == "Test");
+            personnesAutorisees.ShouldContain(e => e.FirstName == "User");
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<PersonneAutoriseeDto>>();
+            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<AuthorizedPersonDto>>();
             personnesAutorisees.ShouldNotBeNull();
             personnesAutorisees.ShouldBeEmpty();
         }
@@ -61,11 +61,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreatePersonneAutoriseeDto { Nom = "Test", Prenom = "User" };
+            var createDto = new CreateAuthorizedPersonDto { LastName = "Test", FirstName = "User" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/personnesautorisees/{createdPersonne!.Id}");
@@ -74,10 +74,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var personneAutorisee = await response.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var personneAutorisee = await response.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
             personneAutorisee.ShouldNotBeNull();
             personneAutorisee.Id.ShouldBe(createdPersonne.Id);
-            personneAutorisee.Nom.ShouldBe("Test");
+            personneAutorisee.LastName.ShouldBe("Test");
         }
 
         [Fact]
@@ -102,23 +102,23 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer une personne autorisée
-            var personneAutoriseeDto = new CreatePersonneAutoriseeDto { Nom = "Alice", Prenom = "mam" };
+            var personneAutoriseeDto = new CreateAuthorizedPersonDto { LastName = "Alice", FirstName = "mam" };
             var postPersonneAutorisee = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutoriseeDto);
             postPersonneAutorisee.EnsureSuccessStatusCode();
-            var createdPersonneAutorisee = await postPersonneAutorisee.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonneAutorisee = await postPersonneAutorisee.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // 2. Créer un enfant
-            var enfantDto = new CreateEnfantDto { Nom = "Alice", Civilite = "mme" };
+            var enfantDto = new CreateChildDto { LastName = "Alice", Gender = "mme" };
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             postEnfant.EnsureSuccessStatusCode();
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
 
             // 3. Lier personne autorisée ↔ enfant
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                PersonneAutoriseeId = createdPersonneAutorisee!.Id,
-                Affiliation = "Parent"
+                ChildId = createdEnfant!.Id,
+                AuthorizedPersonId = createdPersonneAutorisee!.Id,
+                Relationship = "Parent"
             };
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
             linkResponse.EnsureSuccessStatusCode();
@@ -127,13 +127,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/personnesautorisees/{createdPersonneAutorisee!.Id}/with-enfants");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PersonneAutoriseeWithEnfantsDto>();
+            var result = await response.Content.ReadFromJsonAsync<AuthorizedPersonWithChildrenDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdPersonneAutorisee.Id);
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldContain(r => r.Nom == "Alice");
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldContain(r => r.LastName == "Alice");
         }
 
         [Fact]
@@ -144,23 +144,23 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer une personne autorisée
-            var personneAutoriseeDto = new CreatePersonneAutoriseeDto { Nom = "Bob", Prenom = "Smith" };
+            var personneAutoriseeDto = new CreateAuthorizedPersonDto { LastName = "Bob", FirstName = "Smith" };
             var postPersonneAutorisee = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutoriseeDto);
             postPersonneAutorisee.EnsureSuccessStatusCode();
 
-            var createdPersonneAutorisee = await postPersonneAutorisee.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonneAutorisee = await postPersonneAutorisee.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/personnesautorisees/{createdPersonneAutorisee!.Id}/with-enfants");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PersonneAutoriseeWithEnfantsDto>();
+            var result = await response.Content.ReadFromJsonAsync<AuthorizedPersonWithChildrenDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdPersonneAutorisee.Id);
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldBeEmpty();
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldBeEmpty();
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var dto = new CreatePersonneAutoriseeDto { Nom = "John", Prenom = "Doe", Telephone = "123456789" };
+            var dto = new CreateAuthorizedPersonDto { LastName = "John", FirstName = "Doe", Phone = "123456789" };
 
             // Act
             var response = await client.PostAsJsonAsync("/api/v1/personnesautorisees", dto);
@@ -193,10 +193,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var createdPersonne = await response.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonne = await response.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
             createdPersonne.ShouldNotBeNull();
-            createdPersonne.Nom.ShouldBe("John");
-            createdPersonne.Prenom.ShouldBe("Doe");
+            createdPersonne.LastName.ShouldBe("John");
+            createdPersonne.FirstName.ShouldBe("Doe");
         }
 
         [Fact]
@@ -222,16 +222,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreatePersonneAutoriseeDto { Nom = "Jane", Prenom = "Doe" };
+            var createDto = new CreateAuthorizedPersonDto { LastName = "Jane", FirstName = "Doe" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var updateDto = new UpdatePersonneAutoriseeDto
+            var updateDto = new UpdateAuthorizedPersonDto
             {
                 Id = createdPersonne!.Id,
-                Nom = "Jane Updated",
-                Prenom = "Doe Updated"
+                LastName = "Jane Updated",
+                FirstName = "Doe Updated"
             };
 
             // Act
@@ -242,10 +242,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var getResponse = await client.GetAsync($"/api/v1/personnesautorisees/{createdPersonne.Id}");
-            var updatedPersonne = await getResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var updatedPersonne = await getResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
             updatedPersonne.ShouldNotBeNull();
-            updatedPersonne.Nom.ShouldBe("Jane Updated");
-            updatedPersonne.Prenom.ShouldBe("Doe Updated");
+            updatedPersonne.LastName.ShouldBe("Jane Updated");
+            updatedPersonne.FirstName.ShouldBe("Doe Updated");
         }
 
         [Fact]
@@ -255,11 +255,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdatePersonneAutoriseeDto
+            var updateDto = new UpdateAuthorizedPersonDto
             {
                 Id = 2,
-                Nom = "Jane Updated",
-                Prenom = "Doe Updated"
+                LastName = "Jane Updated",
+                FirstName = "Doe Updated"
             };
 
             // Act
@@ -276,11 +276,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdatePersonneAutoriseeDto
+            var updateDto = new UpdateAuthorizedPersonDto
             {
                 Id = 999, // ID qui n'existe pas
-                Nom = "Non Existent",
-                Prenom = "User"
+                LastName = "Non Existent",
+                FirstName = "User"
             };
 
             // Act
@@ -297,10 +297,10 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreatePersonneAutoriseeDto { Nom = "Delete", Prenom = "Me" };
+            var createDto = new CreateAuthorizedPersonDto { LastName = "Delete", FirstName = "Me" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPersonne = await postResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/personnesautorisees/{createdPersonne!.Id}");

@@ -2,8 +2,8 @@
 using Asp.Versioning.ApiExplorer;
 using AutoMapper;
 using GestionAssociatifERP.Helpers;
+using GestionAssociatifERP.Infrastructure.Persistence;
 using GestionAssociatifERP.Mappings;
-using GestionAssociatifERP.Models;
 using GestionAssociatifERP.Repositories;
 using GestionAssociatifERP.Services;
 using GestionAssociatifERP.Swagger;
@@ -42,28 +42,28 @@ namespace GestionAssociatifERP
             builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
             if (!builder.Environment.IsEnvironment("Testing"))
-                builder.Services.AddDbContext<GestionAssociatifDbContext>(options =>
+                builder.Services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
 
             // Injection Repositories
-            builder.Services.AddScoped<IResponsableRepository, ResponsableRepository>();
-            builder.Services.AddScoped<IEnfantRepository, EnfantRepository>();
-            builder.Services.AddScoped<IInformationFinanciereRepository, InformationFinanciereRepository>();
-            builder.Services.AddScoped<ISituationPersonnelleRepository, SituationPersonnelleRepository>();
-            builder.Services.AddScoped<IDonneeSupplementaireRepository, DonneeSupplementaireRepository>();
-            builder.Services.AddScoped<IPersonneAutoriseeRepository, PersonneAutoriseeRepository>();
-            builder.Services.AddScoped<IResponsableEnfantRepository, ResponsableEnfantRepository>();
-            builder.Services.AddScoped<IPersonneAutoriseeEnfantRepository, PersonneAutoriseeEnfantRepository>();
+            builder.Services.AddScoped<IGuardianRepository, GuardianRepository>();
+            builder.Services.AddScoped<IChildRepository, ChildRepository>();
+            builder.Services.AddScoped<IFinancialInformationRepository, FinancialInformationRepository>();
+            builder.Services.AddScoped<IPersonalSituationRepository, PersonalSituationRepository>();
+            builder.Services.AddScoped<IAdditionalDataRepository, AdditionalDataRepository>();
+            builder.Services.AddScoped<IAuthorizedPersonRepository, AuthorizedPersonRepository>();
+            builder.Services.AddScoped<IGuardianChildRepository, GuardianChildRepository>();
+            builder.Services.AddScoped<IAuthorizedPersonChildRepository, AuthorizedPersonChildRepository>();
 
             // Injection Services
-            builder.Services.AddScoped<IResponsableService, ResponsableService>();
-            builder.Services.AddScoped<IEnfantService, EnfantService>();
-            builder.Services.AddScoped<IInformationFinanciereService, InformationFinanciereService>();
-            builder.Services.AddScoped<ISituationPersonnelleService, SituationPersonnelleService>();
-            builder.Services.AddScoped<IDonneeSupplementaireService, DonneeSupplementaireService>();
-            builder.Services.AddScoped<IPersonneAutoriseeService, PersonneAutoriseeService>();
-            builder.Services.AddScoped<ILinkResponsableEnfantService, LinkResponsableEnfantService>();
-            builder.Services.AddScoped<ILinkPersonneAutoriseeEnfantService, LinkPersonneAutoriseeEnfantService>();
+            builder.Services.AddScoped<IGuardianService, GuardianService>();
+            builder.Services.AddScoped<IChildService, ChildService>();
+            builder.Services.AddScoped<IFinancialInformationService, FinancialInformationService>();
+            builder.Services.AddScoped<IPersonalSituationService, PersonalSituationService>();
+            builder.Services.AddScoped<IAdditionalDataService, AdditionalDataService>();
+            builder.Services.AddScoped<IAuthorizedPersonService, AuthorizedPersonService>();
+            builder.Services.AddScoped<ILinkGuardianChildService, LinkGuardianChildService>();
+            builder.Services.AddScoped<ILinkAuthorizedPersonChildService, LinkAuthorizedPersonChildService>();
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {

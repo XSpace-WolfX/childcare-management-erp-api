@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class InformationFinanciereServiceTests
     {
-        private readonly IInformationFinanciereService _informationFinanciereService;
-        private readonly Mock<IInformationFinanciereRepository> _informationFinanciereRepositoryMock;
+        private readonly IFinancialInformationService _informationFinanciereService;
+        private readonly Mock<IFinancialInformationRepository> _informationFinanciereRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public InformationFinanciereServiceTests()
         {
-            _informationFinanciereRepositoryMock = new Mock<IInformationFinanciereRepository>();
+            _informationFinanciereRepositoryMock = new Mock<IFinancialInformationRepository>();
             _mapperMock = new Mock<IMapper>();
-            _informationFinanciereService = new InformationFinanciereService(_informationFinanciereRepositoryMock.Object, _mapperMock.Object);
+            _informationFinanciereService = new FinancialInformationService(_informationFinanciereRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, ResponsableId = 200, DateDebut = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day) }
             };
 
-            var informationsFinancieresDto = new List<InformationFinanciereDto>
+            var informationsFinancieresDto = new List<FinancialInformationDto>
             {
-                new() { Id = 1, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) },
-                new() { Id = 2, ResponsableId = 200, DateDebut = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day) }
+                new() { Id = 1, GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) },
+                new() { Id = 2, GuardianId = 200, StartDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day) }
             };
 
             _informationFinanciereRepositoryMock
@@ -42,11 +42,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(informationsFinancieres);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<InformationFinanciereDto>>(informationsFinancieres))
+                .Setup(m => m.Map<IEnumerable<FinancialInformationDto>>(informationsFinancieres))
                 .Returns(informationsFinancieresDto);
 
             // Act
-            var result = await _informationFinanciereService.GetAllInformationsFinancieresAsync();
+            var result = await _informationFinanciereService.GetAllFinancialInformationsAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -60,18 +60,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var informationsFinancieres = new List<InformationFinanciere>();
-            var informationsFinancieresDto = new List<InformationFinanciereDto>();
+            var informationsFinancieresDto = new List<FinancialInformationDto>();
 
             _informationFinanciereRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(informationsFinancieres);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<InformationFinanciereDto>>(informationsFinancieres))
+                .Setup(m => m.Map<IEnumerable<FinancialInformationDto>>(informationsFinancieres))
                 .Returns(informationsFinancieresDto);
 
             // Act
-            var result = await _informationFinanciereService.GetAllInformationsFinancieresAsync();
+            var result = await _informationFinanciereService.GetAllFinancialInformationsAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -84,18 +84,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var informationFinanciere = new InformationFinanciere { Id = 1, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
-            var informationFinanciereDto = new InformationFinanciereDto { Id = 1, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var informationFinanciereDto = new FinancialInformationDto { Id = 1, GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             _informationFinanciereRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(informationFinanciere);
 
             _mapperMock
-                .Setup(m => m.Map<InformationFinanciereDto>(informationFinanciere))
+                .Setup(m => m.Map<FinancialInformationDto>(informationFinanciere))
                 .Returns(informationFinanciereDto);
 
             // Act
-            var result = await _informationFinanciereService.GetInformationFinanciereAsync(1);
+            var result = await _informationFinanciereService.GetFinancialInformationAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -112,7 +112,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.GetInformationFinanciereAsync(1);
+            var result = await _informationFinanciereService.GetFinancialInformationAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -124,9 +124,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateInformationFinanciereAsync_WhenInformationFinanciereIsCreated_ShouldReturnMappedDto()
         {
             // Arrange
-            var newInformationFinanciereDto = new CreateInformationFinanciereDto { ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var newInformationFinanciereDto = new CreateFinancialInformationDto { GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
             var informationFinanciere = new InformationFinanciere { Id = 1, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
-            var createdInformationFinanciereDto = new InformationFinanciereDto { Id = 1, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var createdInformationFinanciereDto = new FinancialInformationDto { Id = 1, GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             _mapperMock
                 .Setup(m => m.Map<InformationFinanciere>(newInformationFinanciereDto))
@@ -141,11 +141,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(informationFinanciere);
 
             _mapperMock
-                .Setup(m => m.Map<InformationFinanciereDto>(informationFinanciere))
+                .Setup(m => m.Map<FinancialInformationDto>(informationFinanciere))
                 .Returns(createdInformationFinanciereDto);
 
             // Act
-            var result = await _informationFinanciereService.CreateInformationFinanciereAsync(newInformationFinanciereDto);
+            var result = await _informationFinanciereService.CreateFinancialInformationAsync(newInformationFinanciereDto);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -159,14 +159,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateInformationFinanciereAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newInformationFinanciereDto = new CreateInformationFinanciereDto { ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var newInformationFinanciereDto = new CreateFinancialInformationDto { GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             _mapperMock
                 .Setup(m => m.Map<InformationFinanciere>(newInformationFinanciereDto))
                 .Returns((InformationFinanciere)null!);
 
             // Act
-            var result = await _informationFinanciereService.CreateInformationFinanciereAsync(newInformationFinanciereDto);
+            var result = await _informationFinanciereService.CreateFinancialInformationAsync(newInformationFinanciereDto);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -182,7 +182,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Arrange
             var id = 1;
             var informationFinanciere = new InformationFinanciere { Id = id, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
-            var updateInformationFinanciereDto = new UpdateInformationFinanciereDto { Id = 1, ResponsableId = 200, DateDebut = new DateOnly(DateTime.Now.Year, 2, 1) };
+            var updateInformationFinanciereDto = new UpdateFinancialInformationDto { Id = 1, GuardianId = 200, StartDate = new DateOnly(DateTime.Now.Year, 2, 1) };
 
             _informationFinanciereRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
@@ -197,7 +197,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
+            var result = await _informationFinanciereService.UpdateFinancialInformationAsync(id, updateInformationFinanciereDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -211,10 +211,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateInformationFinanciereDto = new UpdateInformationFinanciereDto { Id = 3, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var updateInformationFinanciereDto = new UpdateFinancialInformationDto { Id = 3, GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
+            var result = await _informationFinanciereService.UpdateFinancialInformationAsync(id, updateInformationFinanciereDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -229,14 +229,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateInformationFinanciereDto = new UpdateInformationFinanciereDto { Id = id, ResponsableId = 100, DateDebut = new DateOnly(DateTime.Now.Year, 1, 1) };
+            var updateInformationFinanciereDto = new UpdateFinancialInformationDto { Id = id, GuardianId = 100, StartDate = new DateOnly(DateTime.Now.Year, 1, 1) };
 
             _informationFinanciereRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.UpdateInformationFinanciereAsync(id, updateInformationFinanciereDto);
+            var result = await _informationFinanciereService.UpdateFinancialInformationAsync(id, updateInformationFinanciereDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -262,7 +262,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _informationFinanciereService.DeleteInformationFinanciereAsync(id);
+            var result = await _informationFinanciereService.DeleteFinancialInformationAsync(id);
 
             // Assert
             result.ShouldNotBeNull();
@@ -282,7 +282,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as InformationFinanciere);
 
             // Act
-            var result = await _informationFinanciereService.DeleteInformationFinanciereAsync(id);
+            var result = await _informationFinanciereService.DeleteFinancialInformationAsync(id);
 
             // Assert
             result.ShouldNotBeNull();

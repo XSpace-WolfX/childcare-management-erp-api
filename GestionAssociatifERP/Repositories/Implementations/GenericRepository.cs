@@ -1,4 +1,4 @@
-﻿using GestionAssociatifERP.Models;
+﻿using GestionAssociatifERP.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -6,10 +6,10 @@ namespace GestionAssociatifERP.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        protected readonly GestionAssociatifDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public GenericRepository(GestionAssociatifDbContext dbContext)
+        public GenericRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = dbContext.Set<TEntity>();

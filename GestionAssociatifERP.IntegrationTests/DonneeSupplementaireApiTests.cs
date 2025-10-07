@@ -15,7 +15,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/donneessupplementaires";
-            var dto = new CreateDonneeSupplementaireDto { Parametre = "Parametre Test", Valeur = "Valeur Test" };
+            var dto = new CreateAdditionalDataDto { ParamName = "Parametre Test", ParamValue = "Valeur Test" };
             var postReponse = await client.PostAsJsonAsync(url, dto);
 
             postReponse.EnsureSuccessStatusCode();
@@ -27,10 +27,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var donneesSupplementaires = await response.Content.ReadFromJsonAsync<List<DonneeSupplementaireDto>>();
+            var donneesSupplementaires = await response.Content.ReadFromJsonAsync<List<AdditionalDataDto>>();
             donneesSupplementaires.ShouldNotBeNull();
             donneesSupplementaires.ShouldNotBeEmpty();
-            donneesSupplementaires.ShouldAllBe(d => d.Parametre == dto.Parametre && d.Valeur == dto.Valeur);
+            donneesSupplementaires.ShouldAllBe(d => d.ParamName == dto.ParamName && d.ParamValue == dto.ParamValue);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var donneesSupplementaires = await response.Content.ReadFromJsonAsync<List<DonneeSupplementaireDto>>();
+            var donneesSupplementaires = await response.Content.ReadFromJsonAsync<List<AdditionalDataDto>>();
             donneesSupplementaires.ShouldNotBeNull();
             donneesSupplementaires.ShouldBeEmpty();
         }
@@ -61,11 +61,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateDonneeSupplementaireDto { Parametre = "Parametre Test", Valeur = "Valeur Test" };
+            var createDto = new CreateAdditionalDataDto { ParamName = "Parametre Test", ParamValue = "Valeur Test" };
             var postReponse = await client.PostAsJsonAsync("/api/v1/donneessupplementaires", createDto);
             postReponse.EnsureSuccessStatusCode();
 
-            var created = await postReponse.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
+            var created = await postReponse.Content.ReadFromJsonAsync<AdditionalDataDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/donneessupplementaires/{created!.Id}");
@@ -74,10 +74,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var donneeSupplementaire = await response.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
+            var donneeSupplementaire = await response.Content.ReadFromJsonAsync<AdditionalDataDto>();
             donneeSupplementaire.ShouldNotBeNull();
-            donneeSupplementaire.Parametre.ShouldBe(createDto.Parametre);
-            donneeSupplementaire.Valeur.ShouldBe(createDto.Valeur);
+            donneeSupplementaire.ParamName.ShouldBe(createDto.ParamName);
+            donneeSupplementaire.ParamValue.ShouldBe(createDto.ParamValue);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/donneessupplementaires";
-            var dto = new CreateDonneeSupplementaireDto { Parametre = "Parametre Test", Valeur = "Valeur Test" };
+            var dto = new CreateAdditionalDataDto { ParamName = "Parametre Test", ParamValue = "Valeur Test" };
 
             // Act
             var response = await client.PostAsJsonAsync(url, dto);
@@ -111,10 +111,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var donneeSupplementaire = await response.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
+            var donneeSupplementaire = await response.Content.ReadFromJsonAsync<AdditionalDataDto>();
             donneeSupplementaire.ShouldNotBeNull();
-            donneeSupplementaire.Parametre.ShouldBe(dto.Parametre);
-            donneeSupplementaire.Valeur.ShouldBe(dto.Valeur);
+            donneeSupplementaire.ParamName.ShouldBe(dto.ParamName);
+            donneeSupplementaire.ParamValue.ShouldBe(dto.ParamValue);
         }
 
         [Fact]
@@ -140,16 +140,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateDonneeSupplementaireDto { Parametre = "Parametre Test", Valeur = "Valeur Test" };
+            var createDto = new CreateAdditionalDataDto { ParamName = "Parametre Test", ParamValue = "Valeur Test" };
             var postReponse = await client.PostAsJsonAsync("/api/v1/donneessupplementaires", createDto);
             postReponse.EnsureSuccessStatusCode();
-            var created = await postReponse.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
+            var created = await postReponse.Content.ReadFromJsonAsync<AdditionalDataDto>();
 
-            var updateDto = new UpdateDonneeSupplementaireDto
+            var updateDto = new UpdateAdditionalDataDto
             {
                 Id = created!.Id,
-                Parametre = "Parametre Modifié",
-                Valeur = "Valeur Modifiée"
+                ParamName = "Parametre Modifié",
+                ParamValue = "Valeur Modifiée"
             };
 
             // Act
@@ -160,9 +160,9 @@ namespace GestionAssociatifERP.IntegrationTests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var donneeSupplementaire = await client.GetAsync($"/api/v1/donneessupplementaires/{created.Id}");
-            var updated = await donneeSupplementaire.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
-            updated!.Parametre.ShouldBe(updateDto.Parametre);
-            updated.Valeur.ShouldBe(updateDto.Valeur);
+            var updated = await donneeSupplementaire.Content.ReadFromJsonAsync<AdditionalDataDto>();
+            updated!.ParamName.ShouldBe(updateDto.ParamName);
+            updated.ParamValue.ShouldBe(updateDto.ParamValue);
         }
 
         [Fact]
@@ -172,11 +172,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateDonneeSupplementaireDto
+            var updateDto = new UpdateAdditionalDataDto
             {
                 Id = 2,
-                Parametre = "Parametre Modifié",
-                Valeur = "Valeur Modifiée"
+                ParamName = "Parametre Modifié",
+                ParamValue = "Valeur Modifiée"
             };
 
             // Act
@@ -193,11 +193,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateDonneeSupplementaireDto
+            var updateDto = new UpdateAdditionalDataDto
             {
                 Id = 9999,
-                Parametre = "Parametre Modifié",
-                Valeur = "Valeur Modifiée"
+                ParamName = "Parametre Modifié",
+                ParamValue = "Valeur Modifiée"
             };
 
             // Act
@@ -214,10 +214,10 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateDonneeSupplementaireDto { Parametre = "Parametre Test", Valeur = "Valeur Test" };
+            var createDto = new CreateAdditionalDataDto { ParamName = "Parametre Test", ParamValue = "Valeur Test" };
             var postReponse = await client.PostAsJsonAsync("/api/v1/donneessupplementaires", createDto);
             postReponse.EnsureSuccessStatusCode();
-            var created = await postReponse.Content.ReadFromJsonAsync<DonneeSupplementaireDto>();
+            var created = await postReponse.Content.ReadFromJsonAsync<AdditionalDataDto>();
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/donneessupplementaires/{created!.Id}");

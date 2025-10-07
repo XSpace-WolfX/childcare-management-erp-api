@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class SituationPersonnelleServiceTests
     {
-        private readonly ISituationPersonnelleService _situationPersonnelleService;
-        private readonly Mock<ISituationPersonnelleRepository> _situationPersonnelleRepositoryMock;
+        private readonly IPersonalSituationService _situationPersonnelleService;
+        private readonly Mock<IPersonalSituationRepository> _situationPersonnelleRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public SituationPersonnelleServiceTests()
         {
-            _situationPersonnelleRepositoryMock = new Mock<ISituationPersonnelleRepository>();
+            _situationPersonnelleRepositoryMock = new Mock<IPersonalSituationRepository>();
             _mapperMock = new Mock<IMapper>();
-            _situationPersonnelleService = new SituationPersonnelleService(_situationPersonnelleRepositoryMock.Object, _mapperMock.Object);
+            _situationPersonnelleService = new PersonalSituationService(_situationPersonnelleRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, SituationFamiliale = "Situation 2" }
             };
 
-            var situationPersonnelleDtos = new List<SituationPersonnelleDto>
+            var situationPersonnelleDtos = new List<PersonalSituationDto>
             {
-                new() { Id = 1, SituationFamiliale = "Situation 1" },
-                new() { Id = 2, SituationFamiliale = "Situation 2" }
+                new() { Id = 1, FamilySituation = "Situation 1" },
+                new() { Id = 2, FamilySituation = "Situation 2" }
             };
 
             _situationPersonnelleRepositoryMock
@@ -42,11 +42,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(situationPersonnelles);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<SituationPersonnelleDto>>(situationPersonnelles))
+                .Setup(mapper => mapper.Map<IEnumerable<PersonalSituationDto>>(situationPersonnelles))
                 .Returns(situationPersonnelleDtos);
 
             // Act
-            var result = await _situationPersonnelleService.GetAllSituationsPersonnellesAsync();
+            var result = await _situationPersonnelleService.GetAllPersonalSituationsAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -60,18 +60,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var situationPersonnelles = new List<SituationPersonnelle>();
-            var situationPersonnelleDtos = new List<SituationPersonnelleDto>();
+            var situationPersonnelleDtos = new List<PersonalSituationDto>();
 
             _situationPersonnelleRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(situationPersonnelles);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<SituationPersonnelleDto>>(situationPersonnelles))
+                .Setup(mapper => mapper.Map<IEnumerable<PersonalSituationDto>>(situationPersonnelles))
                 .Returns(situationPersonnelleDtos);
 
             // Act
-            var result = await _situationPersonnelleService.GetAllSituationsPersonnellesAsync();
+            var result = await _situationPersonnelleService.GetAllPersonalSituationsAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -84,18 +84,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var situationPersonnelle = new SituationPersonnelle { Id = 1, SituationFamiliale = "Situation 1" };
-            var situationPersonnelleDto = new SituationPersonnelleDto { Id = 1, SituationFamiliale = "Situation 1" };
+            var situationPersonnelleDto = new PersonalSituationDto { Id = 1, FamilySituation = "Situation 1" };
 
             _situationPersonnelleRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(situationPersonnelle);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<SituationPersonnelleDto>(situationPersonnelle))
+                .Setup(mapper => mapper.Map<PersonalSituationDto>(situationPersonnelle))
                 .Returns(situationPersonnelleDto);
 
             // Act
-            var result = await _situationPersonnelleService.GetSituationPersonnelleAsync(1);
+            var result = await _situationPersonnelleService.GetPersonalSituationAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -113,7 +113,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.GetSituationPersonnelleAsync(1);
+            var result = await _situationPersonnelleService.GetPersonalSituationAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -125,9 +125,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateSituationPersonnelleAsync_WhenSituationPersonnelleIsCreated_ShouldReturnMappedDto()
         {
             // Arrange
-            var newCreateDto = new CreateSituationPersonnelleDto { SituationFamiliale = "Situation 1" };
+            var newCreateDto = new CreatePersonalSituationDto { FamilySituation = "Situation 1" };
             var situationPersonnelle = new SituationPersonnelle { Id = 1, SituationFamiliale = "Situation 1" };
-            var situationPersonnelleDtoCreated = new SituationPersonnelleDto { Id = 1, SituationFamiliale = "Situation 1" };
+            var situationPersonnelleDtoCreated = new PersonalSituationDto { Id = 1, FamilySituation = "Situation 1" };
 
             _mapperMock
                 .Setup(mapper => mapper.Map<SituationPersonnelle>(newCreateDto))
@@ -142,11 +142,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(situationPersonnelle);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<SituationPersonnelleDto>(situationPersonnelle))
+                .Setup(mapper => mapper.Map<PersonalSituationDto>(situationPersonnelle))
                 .Returns(situationPersonnelleDtoCreated);
 
             // Act
-            var result = await _situationPersonnelleService.CreateSituationPersonnelleAsync(newCreateDto);
+            var result = await _situationPersonnelleService.CreatePersonalSituationAsync(newCreateDto);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -161,14 +161,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateSituationPersonnelleAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newCreateDto = new CreateSituationPersonnelleDto { SituationFamiliale = "Situation 1" };
+            var newCreateDto = new CreatePersonalSituationDto { FamilySituation = "Situation 1" };
 
             _mapperMock
                 .Setup(mapper => mapper.Map<SituationPersonnelle>(newCreateDto))
                 .Returns((SituationPersonnelle)null!);
 
             // Act
-            var result = await _situationPersonnelleService.CreateSituationPersonnelleAsync(newCreateDto);
+            var result = await _situationPersonnelleService.CreatePersonalSituationAsync(newCreateDto);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -184,7 +184,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Arrange
             var id = 1;
             var situationPersonnelle = new SituationPersonnelle { Id = id, SituationFamiliale = "Situation 1" };
-            var updateSituationPersonnelleDto = new UpdateSituationPersonnelleDto { Id = 1, SituationFamiliale = "Updated Situation" };
+            var updateSituationPersonnelleDto = new UpdatePersonalSituationDto { Id = 1, FamilySituation = "Updated Situation" };
 
             _situationPersonnelleRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
@@ -199,7 +199,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(1, updateSituationPersonnelleDto);
+            var result = await _situationPersonnelleService.UpdatePersonalSituationAsync(1, updateSituationPersonnelleDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -213,10 +213,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateSituationPersonnelleDto = new UpdateSituationPersonnelleDto { Id = 2, SituationFamiliale = "Updated Situation" };
+            var updateSituationPersonnelleDto = new UpdatePersonalSituationDto { Id = 2, FamilySituation = "Updated Situation" };
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto);
+            var result = await _situationPersonnelleService.UpdatePersonalSituationAsync(id, updateSituationPersonnelleDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -231,14 +231,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateSituationPersonnelleDto = new UpdateSituationPersonnelleDto { Id = id, SituationFamiliale = "Updated Situation" };
+            var updateSituationPersonnelleDto = new UpdatePersonalSituationDto { Id = id, FamilySituation = "Updated Situation" };
 
             _situationPersonnelleRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.UpdateSituationPersonnelleAsync(id, updateSituationPersonnelleDto);
+            var result = await _situationPersonnelleService.UpdatePersonalSituationAsync(id, updateSituationPersonnelleDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -264,7 +264,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id);
+            var result = await _situationPersonnelleService.DeletePersonalSituationAsync(id);
 
             // Assert
             result.ShouldNotBeNull();
@@ -284,7 +284,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as SituationPersonnelle);
 
             // Act
-            var result = await _situationPersonnelleService.DeleteSituationPersonnelleAsync(id);
+            var result = await _situationPersonnelleService.DeletePersonalSituationAsync(id);
 
             // Assert
             result.ShouldNotBeNull();

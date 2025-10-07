@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class EnfantServiceTests
     {
-        private readonly IEnfantService _enfantService;
-        private readonly Mock<IEnfantRepository> _enfantRepositoryMock;
+        private readonly IChildService _enfantService;
+        private readonly Mock<IChildRepository> _enfantRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public EnfantServiceTests()
         {
-            _enfantRepositoryMock = new Mock<IEnfantRepository>();
+            _enfantRepositoryMock = new Mock<IChildRepository>();
             _mapperMock = new Mock<IMapper>();
-            _enfantService = new EnfantService(_enfantRepositoryMock.Object, _mapperMock.Object);
+            _enfantService = new ChildService(_enfantRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, Nom = "Bob" }
             };
 
-            var enfantsDto = new List<EnfantDto>
+            var enfantsDto = new List<ChildDto>
             {
-                new() { Id = 1, Nom = "Alice" },
-                new() { Id = 2, Nom = "Bob" }
+                new() { Id = 1, LastName = "Alice" },
+                new() { Id = 2, LastName = "Bob" }
             };
 
             _enfantRepositoryMock
@@ -42,11 +42,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(enfants);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<EnfantDto>>(enfants))
+                .Setup(m => m.Map<IEnumerable<ChildDto>>(enfants))
                 .Returns(enfantsDto);
 
             // Act
-            var result = await _enfantService.GetAllEnfantsAsync();
+            var result = await _enfantService.GetAllChildrenAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -60,18 +60,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var enfants = new List<Enfant>();
-            var enfantsDto = new List<EnfantDto>();
+            var enfantsDto = new List<ChildDto>();
 
             _enfantRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(enfants);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<EnfantDto>>(enfants))
+                .Setup(m => m.Map<IEnumerable<ChildDto>>(enfants))
                 .Returns(enfantsDto);
 
             // Act
-            var result = await _enfantService.GetAllEnfantsAsync();
+            var result = await _enfantService.GetAllChildrenAsync();
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -84,18 +84,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var enfant = new Enfant { Id = 1, Nom = "Alice" };
-            var enfantDto = new EnfantDto { Id = 1, Nom = "Alice" };
+            var enfantDto = new ChildDto { Id = 1, LastName = "Alice" };
 
             _enfantRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantDto>(enfant))
+                .Setup(m => m.Map<ChildDto>(enfant))
                 .Returns(enfantDto);
 
             // Act
-            var result = await _enfantService.GetEnfantAsync(1);
+            var result = await _enfantService.GetChildAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -112,7 +112,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantAsync(1);
+            var result = await _enfantService.GetChildAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -135,27 +135,27 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var enfantWithResponsablesDto = new EnfantWithResponsablesDto
+            var enfantWithResponsablesDto = new ChildWithGuardiansDto
             {
                 Id = 1,
-                Nom = "Alice",
-                Responsables = new List<ResponsableDto>
+                LastName = "Alice",
+                Guardians = new List<GuardianDto>
                 {
-                    new() { Id = 1, Nom = "Bob" },
-                    new() { Id = 2, Nom = "Charlie" }
+                    new() { Id = 1, LastName = "Bob" },
+                    new() { Id = 2, LastName = "Charlie" }
                 }
             };
 
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithResponsablesAsync(1))
+                .Setup(repo => repo.GetWithGuardiansAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithResponsablesDto>(enfant))
+                .Setup(m => m.Map<ChildWithGuardiansDto>(enfant))
                 .Returns(enfantWithResponsablesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
+            var result = await _enfantService.GetChildWithGuardiansAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -178,23 +178,23 @@ namespace GestionAssociatifERP.UnitTests.Services
                 ResponsableEnfants = new List<ResponsableEnfant>()
             };
 
-            var enfantWithResponsablesDto = new EnfantWithResponsablesDto
+            var enfantWithResponsablesDto = new ChildWithGuardiansDto
             {
                 Id = 1,
-                Nom = "Alice",
-                Responsables = new List<ResponsableDto>()
+                LastName = "Alice",
+                Guardians = new List<GuardianDto>()
             };
 
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithResponsablesAsync(1))
+                .Setup(repo => repo.GetWithGuardiansAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithResponsablesDto>(enfant))
+                .Setup(m => m.Map<ChildWithGuardiansDto>(enfant))
                 .Returns(enfantWithResponsablesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
+            var result = await _enfantService.GetChildWithGuardiansAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -210,11 +210,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithResponsablesAsync(1))
+                .Setup(repo => repo.GetWithGuardiansAsync(1))
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithResponsablesAsync(1);
+            var result = await _enfantService.GetChildWithGuardiansAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -237,26 +237,26 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var enfantWithPersonnesAutoriseesDto = new EnfantWithPersonnesAutoriseesDto
+            var enfantWithPersonnesAutoriseesDto = new ChildWithAuthorizedPeopleDto
             {
                 Id = 1,
-                Nom = "Alice",
-                PersonnesAutorisees = new List<PersonneAutoriseeDto>
+                LastName = "Alice",
+                PersonnesAutorisees = new List<AuthorizedPersonDto>
                 {
-                    new() { Id = 1, Nom = "Bob" },
-                    new() { Id = 2, Nom = "Charlie" }
+                    new() { Id = 1, LastName = "Bob" },
+                    new() { Id = 2, LastName = "Charlie" }
                 }
             };
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithPersonnesAutoriseesAsync(1))
+                .Setup(repo => repo.GetWithAuthorizedPeopleAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithPersonnesAutoriseesDto>(enfant))
+                .Setup(m => m.Map<ChildWithAuthorizedPeopleDto>(enfant))
                 .Returns(enfantWithPersonnesAutoriseesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
+            var result = await _enfantService.GetChildWithAuthorizedPeopleAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -279,23 +279,23 @@ namespace GestionAssociatifERP.UnitTests.Services
                 PersonneAutoriseeEnfants = new List<PersonneAutoriseeEnfant>()
             };
 
-            var enfantWithPersonnesAutoriseesDto = new EnfantWithPersonnesAutoriseesDto
+            var enfantWithPersonnesAutoriseesDto = new ChildWithAuthorizedPeopleDto
             {
                 Id = 1,
-                Nom = "Alice",
-                PersonnesAutorisees = new List<PersonneAutoriseeDto>()
+                LastName = "Alice",
+                PersonnesAutorisees = new List<AuthorizedPersonDto>()
             };
 
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithPersonnesAutoriseesAsync(1))
+                .Setup(repo => repo.GetWithAuthorizedPeopleAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithPersonnesAutoriseesDto>(enfant))
+                .Setup(m => m.Map<ChildWithAuthorizedPeopleDto>(enfant))
                 .Returns(enfantWithPersonnesAutoriseesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
+            var result = await _enfantService.GetChildWithAuthorizedPeopleAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -311,11 +311,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithPersonnesAutoriseesAsync(1))
+                .Setup(repo => repo.GetWithAuthorizedPeopleAsync(1))
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithPersonnesAutoriseesAsync(1);
+            var result = await _enfantService.GetChildWithAuthorizedPeopleAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -338,27 +338,27 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var enfantWithDonneesSupplementairesDto = new EnfantWithDonneesSupplementairesDto
+            var enfantWithDonneesSupplementairesDto = new ChildWithAdditionalDatasDto
             {
                 Id = 1,
-                Nom = "Alice",
-                DonneeSupplementaires = new List<DonneeSupplementaireDto>
+                LastName = "Alice",
+                AdditionalDatas = new List<AdditionalDataDto>
                 {
-                    new() { Id = 1, Valeur = "A" },
-                    new() { Id = 2, Valeur = "B" }
+                    new() { Id = 1, ParamValue = "A" },
+                    new() { Id = 2, ParamValue = "B" }
                 }
             };
 
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithDonneesSupplementairesAsync(1))
+                .Setup(repo => repo.GetWithAdditionalDatasAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithDonneesSupplementairesDto>(enfant))
+                .Setup(m => m.Map<ChildWithAdditionalDatasDto>(enfant))
                 .Returns(enfantWithDonneesSupplementairesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
+            var result = await _enfantService.GetChildWithAdditionalDatasAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -381,23 +381,23 @@ namespace GestionAssociatifERP.UnitTests.Services
                 DonneeSupplementaires = new List<DonneeSupplementaire>()
             };
 
-            var enfantWithDonneesSupplementairesDto = new EnfantWithDonneesSupplementairesDto
+            var enfantWithDonneesSupplementairesDto = new ChildWithAdditionalDatasDto
             {
                 Id = 1,
-                Nom = "Alice",
-                DonneeSupplementaires = new List<DonneeSupplementaireDto>()
+                LastName = "Alice",
+                AdditionalDatas = new List<AdditionalDataDto>()
             };
 
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithDonneesSupplementairesAsync(1))
+                .Setup(repo => repo.GetWithAdditionalDatasAsync(1))
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantWithDonneesSupplementairesDto>(enfant))
+                .Setup(m => m.Map<ChildWithAdditionalDatasDto>(enfant))
                 .Returns(enfantWithDonneesSupplementairesDto);
 
             // Act
-            var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
+            var result = await _enfantService.GetChildWithAdditionalDatasAsync(1);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -413,11 +413,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _enfantRepositoryMock
-                .Setup(repo => repo.GetWithDonneesSupplementairesAsync(1))
+                .Setup(repo => repo.GetWithAdditionalDatasAsync(1))
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.GetEnfantWithDonneesSupplementairesAsync(1);
+            var result = await _enfantService.GetChildWithAdditionalDatasAsync(1);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -429,9 +429,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateEnfantAsync_WhenEnfantIsCreated_ShouldReturnMappedDto()
         {
             // Arrange
-            var newEnfantDto = new CreateEnfantDto { Nom = "Alice" };
+            var newEnfantDto = new CreateChildDto { LastName = "Alice" };
             var enfant = new Enfant { Id = 1, Nom = "Alice" };
-            var createdEnfantDto = new EnfantDto { Id = 1, Nom = "Alice" };
+            var createdEnfantDto = new ChildDto { Id = 1, LastName = "Alice" };
 
             _mapperMock
                 .Setup(m => m.Map<Enfant>(newEnfantDto))
@@ -446,11 +446,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(enfant);
 
             _mapperMock
-                .Setup(m => m.Map<EnfantDto>(enfant))
+                .Setup(m => m.Map<ChildDto>(enfant))
                 .Returns(createdEnfantDto);
 
             // Act
-            var result = await _enfantService.CreateEnfantAsync(newEnfantDto);
+            var result = await _enfantService.CreateChildAsync(newEnfantDto);
 
             // Assert
             result.Success.ShouldBeTrue();
@@ -464,14 +464,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateEnfantAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newEnfantDto = new CreateEnfantDto { Nom = "Alice" };
+            var newEnfantDto = new CreateChildDto { LastName = "Alice" };
 
             _mapperMock
                 .Setup(m => m.Map<Enfant>(newEnfantDto))
                 .Returns((Enfant)null!);
 
             // Act
-            var result = await _enfantService.CreateEnfantAsync(newEnfantDto);
+            var result = await _enfantService.CreateChildAsync(newEnfantDto);
 
             // Assert
             result.Success.ShouldBeFalse();
@@ -486,7 +486,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateEnfantDto = new UpdateEnfantDto { Id = 1, Nom = "Alice" };
+            var updateEnfantDto = new UpdateChildDto { Id = 1, LastName = "Alice" };
             var enfant = new Enfant { Id = id, Nom = "Alice" };
 
             _enfantRepositoryMock
@@ -502,7 +502,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
+            var result = await _enfantService.UpdateChildAsync(id, updateEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -516,10 +516,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateEnfantDto = new UpdateEnfantDto { Id = 2, Nom = "Alice" };
+            var updateEnfantDto = new UpdateChildDto { Id = 2, LastName = "Alice" };
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
+            var result = await _enfantService.UpdateChildAsync(id, updateEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -534,14 +534,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateEnfantDto = new UpdateEnfantDto { Id = id, Nom = "Alice" };
+            var updateEnfantDto = new UpdateChildDto { Id = id, LastName = "Alice" };
 
             _enfantRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.UpdateEnfantAsync(id, updateEnfantDto);
+            var result = await _enfantService.UpdateChildAsync(id, updateEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -567,7 +567,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _enfantService.DeleteEnfantAsync(id);
+            var result = await _enfantService.DeleteChildAsync(id);
 
             // Assert
             result.ShouldNotBeNull();
@@ -587,7 +587,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Enfant);
 
             // Act
-            var result = await _enfantService.DeleteEnfantAsync(id);
+            var result = await _enfantService.DeleteChildAsync(id);
 
             // Assert
             result.ShouldNotBeNull();

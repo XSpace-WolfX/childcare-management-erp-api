@@ -15,7 +15,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/enfants";
-            var dto = new CreateEnfantDto { Nom = "Alice" };
+            var dto = new CreateChildDto { LastName = "Alice" };
             var postResponse = await client.PostAsJsonAsync(url, dto);
             postResponse.EnsureSuccessStatusCode();
 
@@ -26,9 +26,9 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var enfants = await response.Content.ReadFromJsonAsync<List<EnfantDto>>();
+            var enfants = await response.Content.ReadFromJsonAsync<List<ChildDto>>();
             enfants.ShouldNotBeNull();
-            enfants.ShouldContain(e => e.Nom == "Alice");
+            enfants.ShouldContain(e => e.LastName == "Alice");
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var enfants = await response.Content.ReadFromJsonAsync<List<EnfantDto>>();
+            var enfants = await response.Content.ReadFromJsonAsync<List<ChildDto>>();
             enfants.ShouldNotBeNull();
             enfants.ShouldBeEmpty();
         }
@@ -59,11 +59,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateEnfantDto { Nom = "Alice", Civilite = "mme" };
+            var createDto = new CreateChildDto { LastName = "Alice", Gender = "mme" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/enfants", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var created = await postResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/enfants/{created!.Id}");
@@ -72,10 +72,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var enfant = await response.Content.ReadFromJsonAsync<EnfantDto>();
+            var enfant = await response.Content.ReadFromJsonAsync<ChildDto>();
             enfant.ShouldNotBeNull();
             enfant.Id.ShouldBe(created.Id);
-            enfant.Nom.ShouldBe("Alice");
+            enfant.LastName.ShouldBe("Alice");
         }
 
         [Fact]
@@ -100,23 +100,23 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un enfant
-            var enfantDto = new CreateEnfantDto { Nom = "Alice", Civilite = "mme" };
+            var enfantDto = new CreateChildDto { LastName = "Alice", Gender = "mme" };
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             postEnfant.EnsureSuccessStatusCode();
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
 
             // 2. Créer un responsable
-            var responsableDto = new CreateResponsableDto { Nom = "Dupont", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Dupont", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // 3. Lier responsable ↔ enfant
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                ResponsableId = createdResponsable!.Id,
-                Affiliation = "Parent"
+                ChildId = createdEnfant!.Id,
+                GuardianId = createdResponsable!.Id,
+                Relationship = "Parent"
             };
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
             linkResponse.EnsureSuccessStatusCode();
@@ -125,13 +125,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/enfants/{createdEnfant.Id}/with-responsables");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithResponsablesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithGuardiansDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdEnfant.Id);
-            result.Responsables.ShouldNotBeNull();
-            result.Responsables.ShouldContain(r => r.Nom == "Dupont");
+            result.Guardians.ShouldNotBeNull();
+            result.Guardians.ShouldContain(r => r.LastName == "Dupont");
         }
 
         [Fact]
@@ -141,23 +141,23 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateEnfantDto { Nom = "Léo", Civilite = "m" };
+            var createDto = new CreateChildDto { LastName = "Léo", Gender = "m" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/enfants", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var created = await postResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/enfants/{created!.Id}/with-responsables");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithResponsablesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithGuardiansDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(created.Id);
-            result.Responsables.ShouldNotBeNull();
-            result.Responsables.ShouldBeEmpty();
+            result.Guardians.ShouldNotBeNull();
+            result.Guardians.ShouldBeEmpty();
         }
 
         [Fact]
@@ -182,22 +182,22 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un enfant
-            var enfantDto = new CreateEnfantDto { Nom = "Léo", Civilite = "m" };
+            var enfantDto = new CreateChildDto { LastName = "Léo", Gender = "m" };
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             postEnfant.EnsureSuccessStatusCode();
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
 
             // 2. Créer une personne autorisée
-            var personneDto = new CreatePersonneAutoriseeDto { Nom = "Martin", Prenom = "Matin" };
+            var personneDto = new CreateAuthorizedPersonDto { LastName = "Martin", FirstName = "Matin" };
             var postPers = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneDto);
             postPers.EnsureSuccessStatusCode();
-            var createdPers = await postPers.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var createdPers = await postPers.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // 3. Lier les deux
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                PersonneAutoriseeId = createdPers!.Id
+                ChildId = createdEnfant!.Id,
+                AuthorizedPersonId = createdPers!.Id
             };
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
             linkResponse.EnsureSuccessStatusCode();
@@ -206,7 +206,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/enfants/{createdEnfant.Id}/with-personnes-autorisees");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithPersonnesAutoriseesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithAuthorizedPeopleDto>();
 
             // Assert
             result.ShouldNotBeNull();
@@ -222,16 +222,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfantDto = new CreateEnfantDto { Nom = "Sasha", Civilite = "non_specifie" };
+            var enfantDto = new CreateChildDto { LastName = "Sasha", Gender = "non_specifie" };
             var post = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             post.EnsureSuccessStatusCode();
-            var created = await post.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await post.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/enfants/{created!.Id}/with-personnes-autorisees");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithPersonnesAutoriseesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithAuthorizedPeopleDto>();
 
             // Assert
             result.ShouldNotBeNull();
@@ -262,19 +262,19 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // Créer un enfant
-            var enfantDto = new CreateEnfantDto { Nom = "Jules", Civilite = "m" };
+            var enfantDto = new CreateChildDto { LastName = "Jules", Gender = "m" };
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             postEnfant.EnsureSuccessStatusCode();
-            var created = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
 
             // Créer une donnée supplémentaire liée à l’enfant
-            var dsDto = new CreateDonneeSupplementaireDto
+            var dsDto = new CreateAdditionalDataDto
             {
-                EnfantId = created!.Id,
-                Parametre = "Allergie",
-                Valeur = "Gluten",
-                Type = "Texte",
-                Commentaire = "Important"
+                ChildId = created!.Id,
+                ParamName = "Allergie",
+                ParamValue = "Gluten",
+                ParamType = "Texte",
+                Comment = "Important"
             };
 
             var postDs = await client.PostAsJsonAsync("/api/v1/donneessupplementaires", dsDto);
@@ -284,13 +284,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/enfants/{created.Id}/with-donnees-supplementaires");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithDonneesSupplementairesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithAdditionalDatasDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(created.Id);
-            result.DonneeSupplementaires.ShouldNotBeNull();
-            result.DonneeSupplementaires.ShouldContain(d => d.Parametre == "Allergie");
+            result.AdditionalDatas.ShouldNotBeNull();
+            result.AdditionalDatas.ShouldContain(d => d.ParamName == "Allergie");
         }
 
         [Fact]
@@ -300,22 +300,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfantDto = new CreateEnfantDto { Nom = "Sami", Civilite = "autre" };
+            var enfantDto = new CreateChildDto { LastName = "Sami", Gender = "autre" };
             var post = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             post.EnsureSuccessStatusCode();
-            var created = await post.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await post.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/enfants/{created!.Id}/with-donnees-supplementaires");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<EnfantWithDonneesSupplementairesDto>();
+            var result = await response.Content.ReadFromJsonAsync<ChildWithAdditionalDatasDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(created.Id);
-            result.DonneeSupplementaires.ShouldNotBeNull();
-            result.DonneeSupplementaires.ShouldBeEmpty();
+            result.AdditionalDatas.ShouldNotBeNull();
+            result.AdditionalDatas.ShouldBeEmpty();
         }
 
         [Fact]
@@ -339,11 +339,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var dto = new CreateEnfantDto
+            var dto = new CreateChildDto
             {
-                Civilite = "mme",
-                Nom = "Camille",
-                Prenom = "Dupont"
+                Gender = "mme",
+                LastName = "Camille",
+                FirstName = "Dupont"
             };
 
             // Act
@@ -353,10 +353,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var created = await response.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await response.Content.ReadFromJsonAsync<ChildDto>();
             created.ShouldNotBeNull();
-            created.Nom.ShouldBe("Camille");
-            created.Civilite.ShouldBe("mme");
+            created.LastName.ShouldBe("Camille");
+            created.Gender.ShouldBe("mme");
         }
 
         [Fact]
@@ -382,16 +382,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateEnfantDto { Nom = "Emma", Civilite = "mme" };
+            var createDto = new CreateChildDto { LastName = "Emma", Gender = "mme" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/enfants", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<ChildDto>();
 
-            var updateDto = new UpdateEnfantDto
+            var updateDto = new UpdateChildDto
             {
                 Id = created!.Id,
-                Nom = "Emma Modifiée",
-                Civilite = "mme"
+                LastName = "Emma Modifiée",
+                Gender = "mme"
             };
 
             // Act
@@ -402,9 +402,9 @@ namespace GestionAssociatifERP.IntegrationTests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var getResponse = await client.GetAsync($"/api/v1/enfants/{created.Id}");
-            var updated = await getResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var updated = await getResponse.Content.ReadFromJsonAsync<ChildDto>();
             updated.ShouldNotBeNull();
-            updated!.Nom.ShouldBe("Emma Modifiée");
+            updated!.LastName.ShouldBe("Emma Modifiée");
         }
 
         [Fact]
@@ -414,11 +414,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateEnfantDto
+            var updateDto = new UpdateChildDto
             {
                 Id = 2,
-                Nom = "Invalid",
-                Civilite = "m"
+                LastName = "Invalid",
+                Gender = "m"
             };
 
             // Act
@@ -435,11 +435,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateEnfantDto
+            var updateDto = new UpdateChildDto
             {
                 Id = 9999,
-                Nom = "Inconnu",
-                Civilite = "autre"
+                LastName = "Inconnu",
+                Gender = "autre"
             };
 
             // Act
@@ -456,10 +456,10 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateEnfantDto { Nom = "Lucas", Civilite = "m" };
+            var createDto = new CreateChildDto { LastName = "Lucas", Gender = "m" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/enfants", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/enfants/{created!.Id}");

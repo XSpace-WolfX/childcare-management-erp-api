@@ -15,7 +15,7 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/responsables";
-            var dto = new CreateResponsableDto { Nom = "Alice" };
+            var dto = new CreateGuardianDto { LastName = "Alice" };
             var postResponse = await client.PostAsJsonAsync(url, dto);
             postResponse.EnsureSuccessStatusCode();
 
@@ -26,9 +26,9 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var responsables = await response.Content.ReadFromJsonAsync<List<ResponsableDto>>();
+            var responsables = await response.Content.ReadFromJsonAsync<List<GuardianDto>>();
             responsables.ShouldNotBeNull();
-            responsables.ShouldContain(e => e.Nom == "Alice");
+            responsables.ShouldContain(e => e.LastName == "Alice");
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var responsables = await response.Content.ReadFromJsonAsync<List<ResponsableDto>>();
+            var responsables = await response.Content.ReadFromJsonAsync<List<GuardianDto>>();
             responsables.ShouldNotBeNull();
             responsables.ShouldBeEmpty();
         }
@@ -59,11 +59,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateResponsableDto { Nom = "Bob" };
+            var createDto = new CreateGuardianDto { LastName = "Bob" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/responsables", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}");
@@ -72,10 +72,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var responsable = await response.Content.ReadFromJsonAsync<ResponsableDto>();
+            var responsable = await response.Content.ReadFromJsonAsync<GuardianDto>();
             responsable.ShouldNotBeNull();
             responsable.Id.ShouldBe(createdResponsable.Id);
-            responsable.Nom.ShouldBe("Bob");
+            responsable.LastName.ShouldBe("Bob");
         }
 
         [Fact]
@@ -100,23 +100,23 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un responsable
-            var responsableDto = new CreateResponsableDto { Nom = "Dupont", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Dupont", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // 2. Créer un enfant
-            var enfantDto = new CreateEnfantDto { Nom = "Alice", Civilite = "mme" };
+            var enfantDto = new CreateChildDto { LastName = "Alice", Gender = "mme" };
             var postEnfant = await client.PostAsJsonAsync("/api/v1/enfants", enfantDto);
             postEnfant.EnsureSuccessStatusCode();
-            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<EnfantDto>();
+            var createdEnfant = await postEnfant.Content.ReadFromJsonAsync<ChildDto>();
 
             // 3. Lier responsable ↔ enfant
-            var linkDto = new CreateLinkResponsableEnfantDto
+            var linkDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = createdEnfant!.Id,
-                ResponsableId = createdResponsable!.Id,
-                Affiliation = "Parent"
+                ChildId = createdEnfant!.Id,
+                GuardianId = createdResponsable!.Id,
+                Relationship = "Parent"
             };
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkresponsableenfant", linkDto);
             linkResponse.EnsureSuccessStatusCode();
@@ -125,13 +125,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-enfants");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithEnfantsDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithChildrenDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdResponsable.Id);
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldContain(r => r.Nom == "Alice");
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldContain(r => r.LastName == "Alice");
         }
 
         [Fact]
@@ -141,22 +141,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var responsableDto = new CreateResponsableDto { Nom = "Martin", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Martin", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
 
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-enfants");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithEnfantsDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithChildrenDto>();
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdResponsable.Id);
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldBeEmpty();
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldBeEmpty();
         }
 
         [Fact]
@@ -181,17 +181,17 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un responsable
-            var responsableDto = new CreateResponsableDto { Nom = "Lefevre", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Lefevre", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // 2. Créer une information financière
-            var infoFinanciereDto = new CreateInformationFinanciereDto
+            var infoFinanciereDto = new CreateFinancialInformationDto
             {
-                ResponsableId = createdResponsable!.Id,
-                QuotientFamiliale = 100,
-                DateDebut = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
+                GuardianId = createdResponsable!.Id,
+                FamilyQuotient = 100,
+                StartDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
             };
             var postInfoFinanciere = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", infoFinanciereDto);
             postInfoFinanciere.EnsureSuccessStatusCode();
@@ -200,13 +200,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-information-financiere");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithInformationFinanciereDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithFinancialInformationDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdResponsable.Id);
             result.InformationFinanciere.ShouldNotBeNull();
-            result.InformationFinanciere.QuotientFamiliale.ShouldBe(100);
+            result.InformationFinanciere.FamilyQuotient.ShouldBe(100);
         }
 
         [Fact]
@@ -216,16 +216,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var responsableDto = new CreateResponsableDto { Nom = "Durand", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Durand", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-information-financiere");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithInformationFinanciereDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithFinancialInformationDto>();
 
             // Assert
             result.ShouldNotBeNull();
@@ -255,17 +255,17 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un responsable
-            var responsableDto = new CreateResponsableDto { Nom = "Bernard", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Bernard", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // 2. Créer une situation personnelle
-            var situationPersonnelleDto = new CreateSituationPersonnelleDto
+            var situationPersonnelleDto = new CreatePersonalSituationDto
             {
-                ResponsableId = createdResponsable!.Id,
-                SituationFamiliale = "Célibataire",
-                Secteur = "Test"
+                GuardianId = createdResponsable!.Id,
+                FamilySituation = "Célibataire",
+                Sector = "Test"
             };
             var postSituationPersonnelle = await client.PostAsJsonAsync("/api/v1/situationspersonnelles", situationPersonnelleDto);
             postSituationPersonnelle.EnsureSuccessStatusCode();
@@ -274,13 +274,13 @@ namespace GestionAssociatifERP.IntegrationTests
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-situation-personnelle");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithSituationPersonnelleDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithPersonalSituationDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdResponsable.Id);
-            result.SituationPersonnelle.ShouldNotBeNull();
-            result.SituationPersonnelle.SituationFamiliale.ShouldBe("Célibataire");
+            result.PersonalSituation.ShouldNotBeNull();
+            result.PersonalSituation.FamilySituation.ShouldBe("Célibataire");
         }
 
         [Fact]
@@ -290,22 +290,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var responsableDto = new CreateResponsableDto { Nom = "Lemoine", Civilite = "m" };
+            var responsableDto = new CreateGuardianDto { LastName = "Lemoine", Title = "m" };
             var postResponsable = await client.PostAsJsonAsync("/api/v1/responsables", responsableDto);
             postResponsable.EnsureSuccessStatusCode();
 
-            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponsable.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/responsables/{createdResponsable!.Id}/with-situation-personnelle");
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<ResponsableWithSituationPersonnelleDto>();
+            var result = await response.Content.ReadFromJsonAsync<GuardianWithPersonalSituationDto>();
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(createdResponsable.Id);
-            result.SituationPersonnelle.ShouldBeNull();
+            result.PersonalSituation.ShouldBeNull();
         }
 
         [Fact]
@@ -329,7 +329,7 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateResponsableDto { Nom = "Martin", Civilite = "m" };
+            var createDto = new CreateGuardianDto { LastName = "Martin", Title = "m" };
 
             // Act
             var response = await client.PostAsJsonAsync("/api/v1/responsables", createDto);
@@ -338,10 +338,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var createdResponsable = await response.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await response.Content.ReadFromJsonAsync<GuardianDto>();
             createdResponsable.ShouldNotBeNull();
-            createdResponsable.Nom.ShouldBe("Martin");
-            createdResponsable.Civilite.ShouldBe("m");
+            createdResponsable.LastName.ShouldBe("Martin");
+            createdResponsable.Title.ShouldBe("m");
         }
 
         [Fact]
@@ -368,17 +368,17 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             // 1. Créer un responsable
-            var createDto = new CreateResponsableDto { Nom = "Dupuis", Civilite = "m" };
+            var createDto = new CreateGuardianDto { LastName = "Dupuis", Title = "m" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/responsables", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
             // 2. Mettre à jour le responsable
-            var updateDto = new UpdateResponsableDto
+            var updateDto = new UpdateGuardianDto
             {
                 Id = createdResponsable!.Id,
-                Nom = "Dupuis Modifié",
-                Civilite = "mme"
+                LastName = "Dupuis Modifié",
+                Title = "mme"
             };
 
             // Act
@@ -389,9 +389,9 @@ namespace GestionAssociatifERP.IntegrationTests
             updateResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var getResponse = await client.GetAsync($"/api/v1/responsables/{createdResponsable.Id}");
-            var updatedResponsable = await getResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var updatedResponsable = await getResponse.Content.ReadFromJsonAsync<GuardianDto>();
             updatedResponsable.ShouldNotBeNull();
-            updatedResponsable.Nom.ShouldBe("Dupuis Modifié");
+            updatedResponsable.LastName.ShouldBe("Dupuis Modifié");
         }
 
         [Fact]
@@ -401,11 +401,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateResponsableDto
+            var updateDto = new UpdateGuardianDto
             {
                 Id = 2,
-                Nom = "Lemoine Modifié",
-                Civilite = "mme"
+                LastName = "Lemoine Modifié",
+                Title = "mme"
             };
 
             // Act
@@ -422,11 +422,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateResponsableDto
+            var updateDto = new UpdateGuardianDto
             {
                 Id = 9999,
-                Nom = "Inconnu",
-                Civilite = "m"
+                LastName = "Inconnu",
+                Title = "m"
             };
 
             // Act
@@ -443,10 +443,10 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateResponsableDto { Nom = "Garnier", Civilite = "m" };
+            var createDto = new CreateGuardianDto { LastName = "Garnier", Title = "m" };
             var postResponse = await client.PostAsJsonAsync("/api/v1/responsables", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<ResponsableDto>();
+            var createdResponsable = await postResponse.Content.ReadFromJsonAsync<GuardianDto>();
 
             // Act
             var deleteResponse = await client.DeleteAsync($"/api/v1/responsables/{createdResponsable!.Id}");

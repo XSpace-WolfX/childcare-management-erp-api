@@ -11,20 +11,20 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class LinkResponsableEnfantServiceTests
     {
-        private readonly ILinkResponsableEnfantService _linkResponsableEnfantService;
-        private readonly Mock<IResponsableEnfantRepository> _responsableEnfantRepositoryMock;
-        private readonly Mock<IEnfantRepository> _enfantRepositoryMock;
-        private readonly Mock<IResponsableRepository> _responsableRepositoryMock;
+        private readonly ILinkGuardianChildService _linkResponsableEnfantService;
+        private readonly Mock<IGuardianChildRepository> _responsableEnfantRepositoryMock;
+        private readonly Mock<IChildRepository> _enfantRepositoryMock;
+        private readonly Mock<IGuardianRepository> _responsableRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public LinkResponsableEnfantServiceTests()
         {
-            _responsableEnfantRepositoryMock = new Mock<IResponsableEnfantRepository>();
-            _enfantRepositoryMock = new Mock<IEnfantRepository>();
-            _responsableRepositoryMock = new Mock<IResponsableRepository>();
+            _responsableEnfantRepositoryMock = new Mock<IGuardianChildRepository>();
+            _enfantRepositoryMock = new Mock<IChildRepository>();
+            _responsableRepositoryMock = new Mock<IGuardianRepository>();
             _mapperMock = new Mock<IMapper>();
 
-            _linkResponsableEnfantService = new LinkResponsableEnfantService(
+            _linkResponsableEnfantService = new LinkGuardianChildService(
                 _responsableEnfantRepositoryMock.Object,
                 _enfantRepositoryMock.Object,
                 _responsableRepositoryMock.Object,
@@ -41,9 +41,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { EnfantId = 1, ResponsableId = 1, Affiliation = "Père" }
             };
 
-            var dtos = new List<LinkResponsableEnfantDto>
+            var dtos = new List<LinkGuardianChildDto>
             {
-                new() { EnfantId = 1, ResponsableId = 1, Affiliation = "Père" }
+                new() { ChildId = 1, GuardianId = 1, Relationship = "Père" }
             };
 
             _enfantRepositoryMock
@@ -51,15 +51,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetResponsablesByEnfantIdAsync(1))
+                .Setup(r => r.GetGuardiansByChildIdAsync(1))
                 .ReturnsAsync(links);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkResponsableEnfantDto>>(links))
+                .Setup(m => m.Map<IEnumerable<LinkGuardianChildDto>>(links))
                 .Returns(dtos);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetResponsablesByEnfantIdAsync(1);
+            var result = await _linkResponsableEnfantService.GetGuardiansByChildIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -78,7 +78,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetResponsablesByEnfantIdAsync(1);
+            var result = await _linkResponsableEnfantService.GetGuardiansByChildIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -95,15 +95,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetResponsablesByEnfantIdAsync(1))
+                .Setup(r => r.GetGuardiansByChildIdAsync(1))
                 .ReturnsAsync(new List<ResponsableEnfant>());
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkResponsableEnfantDto>>(It.IsAny<IEnumerable<ResponsableEnfant>>()))
-                .Returns(new List<LinkResponsableEnfantDto>());
+                .Setup(m => m.Map<IEnumerable<LinkGuardianChildDto>>(It.IsAny<IEnumerable<ResponsableEnfant>>()))
+                .Returns(new List<LinkGuardianChildDto>());
 
             // Act
-            var result = await _linkResponsableEnfantService.GetResponsablesByEnfantIdAsync(1);
+            var result = await _linkResponsableEnfantService.GetGuardiansByChildIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -120,9 +120,9 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new ResponsableEnfant { EnfantId = 1, ResponsableId = 2, Affiliation = "Tuteur" }
             };
 
-            var dtos = new List<LinkResponsableEnfantDto>
+            var dtos = new List<LinkGuardianChildDto>
             {
-                new LinkResponsableEnfantDto { EnfantId = 1, ResponsableId = 2, Affiliation = "Tuteur" }
+                new LinkGuardianChildDto { ChildId = 1, GuardianId = 2, Relationship = "Tuteur" }
             };
 
             _responsableRepositoryMock
@@ -130,15 +130,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetEnfantsByResponsableIdAsync(2))
+                .Setup(r => r.GetChildrenByGuardianIdAsync(2))
                 .ReturnsAsync(links);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkResponsableEnfantDto>>(links))
+                .Setup(m => m.Map<IEnumerable<LinkGuardianChildDto>>(links))
                 .Returns(dtos);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetEnfantsByResponsableIdAsync(2);
+            var result = await _linkResponsableEnfantService.GetChildrenByGuardianIdAsync(2);
 
             // Assert
             result.ShouldNotBeNull();
@@ -157,7 +157,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.GetEnfantsByResponsableIdAsync(1);
+            var result = await _linkResponsableEnfantService.GetChildrenByGuardianIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -174,15 +174,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetEnfantsByResponsableIdAsync(1))
+                .Setup(r => r.GetChildrenByGuardianIdAsync(1))
                 .ReturnsAsync(new List<ResponsableEnfant>());
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkResponsableEnfantDto>>(It.IsAny<IEnumerable<ResponsableEnfant>>()))
-                .Returns(new List<LinkResponsableEnfantDto>());
+                .Setup(m => m.Map<IEnumerable<LinkGuardianChildDto>>(It.IsAny<IEnumerable<ResponsableEnfant>>()))
+                .Returns(new List<LinkGuardianChildDto>());
 
             // Act
-            var result = await _linkResponsableEnfantService.GetEnfantsByResponsableIdAsync(1);
+            var result = await _linkResponsableEnfantService.GetChildrenByGuardianIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -199,7 +199,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkResponsableEnfantService.ExistsLinkResponsableEnfantAsync(1, 2);
+            var result = await _linkResponsableEnfantService.ExistsLinkGuardianChildAsync(1, 2);
 
             // Assert
             result.ShouldNotBeNull();
@@ -216,7 +216,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.ExistsLinkResponsableEnfantAsync(1, 2);
+            var result = await _linkResponsableEnfantService.ExistsLinkGuardianChildAsync(1, 2);
 
             // Assert
             result.ShouldNotBeNull();
@@ -228,32 +228,32 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenValid_ShouldReturnDto()
         {
             // Arrange
-            var newLinkResponsableEnfantDto = new CreateLinkResponsableEnfantDto
+            var newLinkResponsableEnfantDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = 1,
-                ResponsableId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                GuardianId = 2,
+                Relationship = "Mère"
             };
 
             var newResponsableEnfant = new ResponsableEnfant
             {
-                EnfantId = newLinkResponsableEnfantDto.EnfantId,
-                ResponsableId = newLinkResponsableEnfantDto.ResponsableId,
-                Affiliation = newLinkResponsableEnfantDto.Affiliation
+                EnfantId = newLinkResponsableEnfantDto.ChildId,
+                ResponsableId = newLinkResponsableEnfantDto.GuardianId,
+                Affiliation = newLinkResponsableEnfantDto.Relationship
             };
 
             var createdResponsableEnfant = new ResponsableEnfant
             {
-                EnfantId = newLinkResponsableEnfantDto.EnfantId,
-                ResponsableId = newLinkResponsableEnfantDto.ResponsableId,
-                Affiliation = newLinkResponsableEnfantDto.Affiliation
+                EnfantId = newLinkResponsableEnfantDto.ChildId,
+                ResponsableId = newLinkResponsableEnfantDto.GuardianId,
+                Affiliation = newLinkResponsableEnfantDto.Relationship
             };
 
-            var createdResponsableEnfantDto = new LinkResponsableEnfantDto
+            var createdResponsableEnfantDto = new LinkGuardianChildDto
             {
-                EnfantId = newLinkResponsableEnfantDto.EnfantId,
-                ResponsableId = newLinkResponsableEnfantDto.ResponsableId,
-                Affiliation = newLinkResponsableEnfantDto.Affiliation
+                ChildId = newLinkResponsableEnfantDto.ChildId,
+                GuardianId = newLinkResponsableEnfantDto.GuardianId,
+                Relationship = newLinkResponsableEnfantDto.Relationship
             };
 
             _enfantRepositoryMock
@@ -265,7 +265,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.LinkExistsAsync(newLinkResponsableEnfantDto.ResponsableId, newLinkResponsableEnfantDto.EnfantId))
+                .Setup(r => r.LinkExistsAsync(newLinkResponsableEnfantDto.GuardianId, newLinkResponsableEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -277,22 +277,22 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetLinkAsync(newLinkResponsableEnfantDto.ResponsableId, newLinkResponsableEnfantDto.EnfantId))
+                .Setup(r => r.GetLinkAsync(newLinkResponsableEnfantDto.GuardianId, newLinkResponsableEnfantDto.ChildId))
                 .ReturnsAsync(createdResponsableEnfant);
 
             _mapperMock
-                .Setup(m => m.Map<LinkResponsableEnfantDto>(createdResponsableEnfant))
+                .Setup(m => m.Map<LinkGuardianChildDto>(createdResponsableEnfant))
                 .Returns(createdResponsableEnfantDto);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newLinkResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newLinkResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
             result.Success.ShouldBeTrue();
             result.Data.ShouldNotBeNull();
-            result.Data.ResponsableId.ShouldBe(newLinkResponsableEnfantDto.ResponsableId);
-            result.Data.EnfantId.ShouldBe(newLinkResponsableEnfantDto.EnfantId);
+            result.Data.ResponsableId.ShouldBe(newLinkResponsableEnfantDto.GuardianId);
+            result.Data.EnfantId.ShouldBe(newLinkResponsableEnfantDto.ChildId);
             result.Data.Affiliation.ShouldBe("Mère");
         }
 
@@ -300,7 +300,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenEnfantDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableEnfantDto = new CreateLinkResponsableEnfantDto { EnfantId = 1, ResponsableId = 2 };
+            var newResponsableEnfantDto = new CreateLinkGuardianChildDto { ChildId = 1, GuardianId = 2 };
 
             _enfantRepositoryMock
                 .Setup(r => r.ExistsAsync(It.IsAny<Expression<Func<Enfant, bool>>>()))
@@ -311,7 +311,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -323,7 +323,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenResponsableDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableEnfantDto = new CreateLinkResponsableEnfantDto { EnfantId = 1, ResponsableId = 2 };
+            var newResponsableEnfantDto = new CreateLinkGuardianChildDto { ChildId = 1, GuardianId = 2 };
 
             _enfantRepositoryMock
                 .Setup(r => r.ExistsAsync(It.IsAny<Expression<Func<Enfant, bool>>>()))
@@ -334,7 +334,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -346,7 +346,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenLinkAlreadyExists_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableEnfantDto = new CreateLinkResponsableEnfantDto { EnfantId = 1, ResponsableId = 1 };
+            var newResponsableEnfantDto = new CreateLinkGuardianChildDto { ChildId = 1, GuardianId = 1 };
 
             _enfantRepositoryMock
                 .Setup(r => r.ExistsAsync(It.IsAny<Expression<Func<Enfant, bool>>>()))
@@ -357,11 +357,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.ResponsableId, newResponsableEnfantDto.EnfantId))
+                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.GuardianId, newResponsableEnfantDto.ChildId))
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -373,11 +373,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableEnfantDto = new CreateLinkResponsableEnfantDto
+            var newResponsableEnfantDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = 1,
-                ResponsableId = 1,
-                Affiliation = "Père"
+                ChildId = 1,
+                GuardianId = 1,
+                Relationship = "Père"
             };
 
             _enfantRepositoryMock
@@ -389,7 +389,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.ResponsableId, newResponsableEnfantDto.EnfantId))
+                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.GuardianId, newResponsableEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -397,7 +397,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -409,18 +409,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkResponsableEnfantAsync_WhenGetLinkReturnsNull_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableEnfantDto = new CreateLinkResponsableEnfantDto
+            var newResponsableEnfantDto = new CreateLinkGuardianChildDto
             {
-                EnfantId = 1,
-                ResponsableId = 2,
-                Affiliation = "Tuteur"
+                ChildId = 1,
+                GuardianId = 2,
+                Relationship = "Tuteur"
             };
 
             var newResponsableEnfant = new ResponsableEnfant
             {
-                EnfantId = newResponsableEnfantDto.EnfantId,
-                ResponsableId = newResponsableEnfantDto.ResponsableId,
-                Affiliation = newResponsableEnfantDto.Affiliation
+                EnfantId = newResponsableEnfantDto.ChildId,
+                ResponsableId = newResponsableEnfantDto.GuardianId,
+                Affiliation = newResponsableEnfantDto.Relationship
             };
 
             _enfantRepositoryMock
@@ -432,7 +432,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.ResponsableId, newResponsableEnfantDto.EnfantId))
+                .Setup(r => r.LinkExistsAsync(newResponsableEnfantDto.GuardianId, newResponsableEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -444,11 +444,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetLinkAsync(newResponsableEnfantDto.ResponsableId, newResponsableEnfantDto.EnfantId))
+                .Setup(r => r.GetLinkAsync(newResponsableEnfantDto.GuardianId, newResponsableEnfantDto.ChildId))
                 .ReturnsAsync((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.CreateLinkResponsableEnfantAsync(newResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.CreateLinkGuardianChildAsync(newResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -461,22 +461,22 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task UpdateLinkResponsableEnfantAsync_WhenLinkExists_ShouldReturnSuccess()
         {
             // Arrange
-            var updateResponsableEnfantDto = new UpdateLinkResponsableEnfantDto 
+            var updateResponsableEnfantDto = new UpdateLinkGuardianChildDto 
             { 
-                EnfantId = 1, 
-                ResponsableId = 2, 
-                Affiliation = "Tante" 
+                ChildId = 1, 
+                GuardianId = 2, 
+                Relationship = "Tante" 
             };
 
             var existingResponsableEnfant = new ResponsableEnfant
             {
-                EnfantId = updateResponsableEnfantDto.EnfantId,
-                ResponsableId = updateResponsableEnfantDto.ResponsableId,
+                EnfantId = updateResponsableEnfantDto.ChildId,
+                ResponsableId = updateResponsableEnfantDto.GuardianId,
                 Affiliation = "Ancien"
             };
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetLinkAsync(updateResponsableEnfantDto.ResponsableId, updateResponsableEnfantDto.EnfantId))
+                .Setup(r => r.GetLinkAsync(updateResponsableEnfantDto.GuardianId, updateResponsableEnfantDto.ChildId))
                 .ReturnsAsync(existingResponsableEnfant);
 
             _mapperMock
@@ -488,7 +488,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.UpdateLinkGuardianChildAsync(updateResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -499,14 +499,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task UpdateLinkResponsableEnfantAsync_WhenLinkDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var updateResponsableEnfantDto = new UpdateLinkResponsableEnfantDto { EnfantId = 1, ResponsableId = 2, Affiliation = "Oncle" };
+            var updateResponsableEnfantDto = new UpdateLinkGuardianChildDto { ChildId = 1, GuardianId = 2, Relationship = "Oncle" };
 
             _responsableEnfantRepositoryMock
-                .Setup(r => r.GetLinkAsync(updateResponsableEnfantDto.ResponsableId, updateResponsableEnfantDto.EnfantId))
+                .Setup(r => r.GetLinkAsync(updateResponsableEnfantDto.GuardianId, updateResponsableEnfantDto.ChildId))
                 .ReturnsAsync((ResponsableEnfant)null!);
 
             // Act
-            var result = await _linkResponsableEnfantService.UpdateLinkResponsableEnfantAsync(updateResponsableEnfantDto);
+            var result = await _linkResponsableEnfantService.UpdateLinkGuardianChildAsync(updateResponsableEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
@@ -527,7 +527,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2);
+            var result = await _linkResponsableEnfantService.RemoveLinkGuardianChildAsync(1, 2);
 
             // Assert
             result.ShouldNotBeNull();
@@ -543,7 +543,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkResponsableEnfantService.RemoveLinkResponsableEnfantAsync(1, 2);
+            var result = await _linkResponsableEnfantService.RemoveLinkGuardianChildAsync(1, 2);
 
             // Assert
             result.ShouldNotBeNull();
