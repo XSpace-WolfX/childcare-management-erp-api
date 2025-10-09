@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class PersonneAutoriseeServiceTests
     {
-        private readonly IPersonneAutoriseeService _personneAutoriseeService;
-        private readonly Mock<IPersonneAutoriseeRepository> _personneAutoriseeRepositoryMock;
+        private readonly IAuthorizedPersonService _personneAutoriseeService;
+        private readonly Mock<IAuthorizedPersonRepository> _personneAutoriseeRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public PersonneAutoriseeServiceTests()
         {
-            _personneAutoriseeRepositoryMock = new Mock<IPersonneAutoriseeRepository>();
+            _personneAutoriseeRepositoryMock = new Mock<IAuthorizedPersonRepository>();
             _mapperMock = new Mock<IMapper>();
-            _personneAutoriseeService = new PersonneAutoriseeService(_personneAutoriseeRepositoryMock.Object, _mapperMock.Object);
+            _personneAutoriseeService = new AuthorizedPersonService(_personneAutoriseeRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, Prenom = "Jane", Nom = "Doe" }
             };
 
-            var personnesAutoriseesDto = new List<PersonneAutoriseeDto>
+            var personnesAutoriseesDto = new List<AuthorizedPersonDto>
             {
-                new() { Id = 1, Prenom = "John", Nom = "Doe" },
-                new() { Id = 2, Prenom = "Jane", Nom = "Doe" }
+                new() { Id = 1, FirstName = "John", LastName = "Doe" },
+                new() { Id = 2, FirstName = "Jane", LastName = "Doe" }
             };
 
             _personneAutoriseeRepositoryMock
@@ -42,16 +42,16 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(personnesAutorisees);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<PersonneAutoriseeDto>>(personnesAutorisees))
+                .Setup(m => m.Map<IEnumerable<AuthorizedPersonDto>>(personnesAutorisees))
                 .Returns(personnesAutoriseesDto);
 
             // Act
-            var result = await _personneAutoriseeService.GetAllPersonnesAutoriseesAsync();
+            var result = await _personneAutoriseeService.GetAllAuthorizedPeopleAsync();
 
             // Assert
             result.ShouldNotBeNull();
             result.Count().ShouldBe(2);
-            result.ShouldContain(e => e.Nom == "Doe");
+            result.ShouldContain(e => e.LastName == "Doe");
         }
 
         [Fact]
@@ -59,18 +59,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var personnesAutorisees = new List<PersonneAutorisee>();
-            var personnesAutoriseesDto = new List<PersonneAutoriseeDto>();
+            var personnesAutoriseesDto = new List<AuthorizedPersonDto>();
 
             _personneAutoriseeRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(personnesAutorisees);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<PersonneAutoriseeDto>>(personnesAutorisees))
+                .Setup(m => m.Map<IEnumerable<AuthorizedPersonDto>>(personnesAutorisees))
                 .Returns(personnesAutoriseesDto);
 
             // Act
-            var result = await _personneAutoriseeService.GetAllPersonnesAutoriseesAsync();
+            var result = await _personneAutoriseeService.GetAllAuthorizedPeopleAsync();
 
             // Assert
             result.ShouldNotBeNull();
@@ -82,24 +82,24 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var personneAutorisee = new PersonneAutorisee { Id = 1, Prenom = "John", Nom = "Doe" };
-            var personneAutoriseeDto = new PersonneAutoriseeDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var personneAutoriseeDto = new AuthorizedPersonDto { Id = 1, FirstName = "John", LastName = "Doe" };
 
             _personneAutoriseeRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(personneAutorisee);
 
             _mapperMock
-                .Setup(m => m.Map<PersonneAutoriseeDto>(personneAutorisee))
+                .Setup(m => m.Map<AuthorizedPersonDto>(personneAutorisee))
                 .Returns(personneAutoriseeDto);
 
             // Act
-            var result = await _personneAutoriseeService.GetPersonneAutoriseeAsync(1);
+            var result = await _personneAutoriseeService.GetAuthorizedPersonAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetPersonneAutoriseeAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetAuthorizedPersonAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
@@ -133,38 +133,38 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var personneAutoriseeWithEnfantsDto = new PersonneAutoriseeWithEnfantsDto
+            var personneAutoriseeWithEnfantsDto = new AuthorizedPersonWithChildrenDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                Enfants = new List<EnfantDto>
+                FirstName = "John",
+                LastName = "Doe",
+                Children = new List<ChildDto>
                 {
-                    new() { Id = 1, Prenom = "Jean", Nom = "Doe" },
-                    new() { Id = 2, Prenom = "Jade", Nom = "Doe" }
+                    new() { Id = 1, FirstName = "Jean", LastName = "Doe" },
+                    new() { Id = 2, FirstName = "Jade", LastName = "Doe" }
                 }
             };
 
             _personneAutoriseeRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(personneAutorisee);
 
             _mapperMock
-                .Setup(m => m.Map<PersonneAutoriseeWithEnfantsDto>(personneAutorisee))
+                .Setup(m => m.Map<AuthorizedPersonWithChildrenDto>(personneAutorisee))
                 .Returns(personneAutoriseeWithEnfantsDto);
 
             // Act
-            var result = await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1);
+            var result = await _personneAutoriseeService.GetAuthorizedPersonWithChildrenAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldNotBeEmpty();
-            result.Enfants.Count.ShouldBe(2);
-            result.Enfants.ShouldContain(e => e.Prenom == "Jean");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldNotBeEmpty();
+            result.Children.Count.ShouldBe(2);
+            result.Children.ShouldContain(e => e.FirstName == "Jean");
         }
 
         [Fact]
@@ -179,32 +179,32 @@ namespace GestionAssociatifERP.UnitTests.Services
                 PersonneAutoriseeEnfants = new List<PersonneAutoriseeEnfant>()
             };
 
-            var personneAutoriseeWithEnfantsDto = new PersonneAutoriseeWithEnfantsDto
+            var personneAutoriseeWithEnfantsDto = new AuthorizedPersonWithChildrenDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                Enfants = new List<EnfantDto>()
+                FirstName = "John",
+                LastName = "Doe",
+                Children = new List<ChildDto>()
             };
 
             _personneAutoriseeRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(personneAutorisee);
 
             _mapperMock
-                .Setup(m => m.Map<PersonneAutoriseeWithEnfantsDto>(personneAutorisee))
+                .Setup(m => m.Map<AuthorizedPersonWithChildrenDto>(personneAutorisee))
                 .Returns(personneAutoriseeWithEnfantsDto);
 
             // Act
-            var result = await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1);
+            var result = await _personneAutoriseeService.GetAuthorizedPersonWithChildrenAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldBeEmpty();
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldBeEmpty();
         }
 
         [Fact]
@@ -212,11 +212,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _personneAutoriseeRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetPersonneAutoriseeWithEnfantsAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.GetAuthorizedPersonWithChildrenAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
@@ -226,9 +226,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreatePersonneAutoriseeAsync_WhenPersonneAutoriseeIsCreated_ShouldReturnMappedDto()
         {
             // Arrange
-            var newPersonneAutoriseeDto = new CreatePersonneAutoriseeDto { Prenom = "John", Nom = "Doe" };
+            var newPersonneAutoriseeDto = new CreateAuthorizedPersonDto { FirstName = "John", LastName = "Doe" };
             var personneAutorisee = new PersonneAutorisee { Id = 1, Prenom = "John", Nom = "Doe" };
-            var createdPersonneAutoriseeDto = new PersonneAutoriseeDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var createdPersonneAutoriseeDto = new AuthorizedPersonDto { Id = 1, FirstName = "John", LastName = "Doe" };
 
             _mapperMock
                 .Setup(m => m.Map<PersonneAutorisee>(newPersonneAutoriseeDto))
@@ -243,17 +243,17 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(personneAutorisee);
 
             _mapperMock
-                .Setup(m => m.Map<PersonneAutoriseeDto>(personneAutorisee))
+                .Setup(m => m.Map<AuthorizedPersonDto>(personneAutorisee))
                 .Returns(createdPersonneAutoriseeDto);
 
             // Act
-            var result = await _personneAutoriseeService.CreatePersonneAutoriseeAsync(newPersonneAutoriseeDto);
+            var result = await _personneAutoriseeService.CreateAuthorizedPersonAsync(newPersonneAutoriseeDto);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.AddAsync(personneAutorisee), Times.Once);
         }
@@ -262,14 +262,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreatePersonneAutoriseeAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeDto = new CreatePersonneAutoriseeDto { Prenom = "John", Nom = "Doe" };
+            var newPersonneAutoriseeDto = new CreateAuthorizedPersonDto { FirstName = "John", LastName = "Doe" };
             
             _mapperMock
                 .Setup(m => m.Map<PersonneAutorisee>(newPersonneAutoriseeDto))
                 .Returns((PersonneAutorisee)null!);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.CreatePersonneAutoriseeAsync(newPersonneAutoriseeDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.CreateAuthorizedPersonAsync(newPersonneAutoriseeDto));
 
             // Assert
             exception.Message.ShouldBe("Erreur lors de la création de la personne autorisée : Le Mapping a échoué.");
@@ -282,7 +282,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updatePersonneAutoriseeDto = new UpdatePersonneAutoriseeDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var updatePersonneAutoriseeDto = new UpdateAuthorizedPersonDto { Id = 1, FirstName = "John", LastName = "Doe" };
             var personneAutorisee = new PersonneAutorisee { Id = id, Prenom = "John", Nom = "Doe" };
 
             _personneAutoriseeRepositoryMock
@@ -300,7 +300,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
+            await Should.NotThrowAsync(async () => await _personneAutoriseeService.UpdateAuthorizedPersonAsync(id, updatePersonneAutoriseeDto));
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.UpdateAsync(personneAutorisee), Times.Once);
         }
@@ -310,10 +310,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updatePersonneAutoriseeDto = new UpdatePersonneAutoriseeDto { Id = 2, Prenom = "John", Nom = "Doe" };
+            var updatePersonneAutoriseeDto = new UpdateAuthorizedPersonDto { Id = 2, FirstName = "John", LastName = "Doe" };
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdateAuthorizedPersonAsync(id, updatePersonneAutoriseeDto));
 
             // Assert
             exception.Message.ShouldBe("L'identifiant de la personne autorisée ne correspond pas à celui de l'objet envoyé.");
@@ -326,14 +326,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updatePersonneAutoriseeDto = new UpdatePersonneAutoriseeDto { Id = id, Prenom = "John", Nom = "Doe" };
+            var updatePersonneAutoriseeDto = new UpdateAuthorizedPersonDto { Id = id, FirstName = "John", LastName = "Doe" };
 
             _personneAutoriseeRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdatePersonneAutoriseeAsync(id, updatePersonneAutoriseeDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.UpdateAuthorizedPersonAsync(id, updatePersonneAutoriseeDto));
 
             // Assert
             exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");
@@ -359,7 +359,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id));
+            await Should.NotThrowAsync(async () => await _personneAutoriseeService.DeleteAuthorizedPersonAsync(id));
 
             _personneAutoriseeRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -375,7 +375,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as PersonneAutorisee);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.DeletePersonneAutoriseeAsync(id));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _personneAutoriseeService.DeleteAuthorizedPersonAsync(id));
 
             // Assert
             exception.Message.ShouldBe("Aucune personne autorisée correspondante n'a été trouvée.");

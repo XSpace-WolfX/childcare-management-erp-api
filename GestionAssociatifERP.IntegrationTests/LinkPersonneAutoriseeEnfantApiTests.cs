@@ -14,23 +14,23 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
@@ -42,9 +42,9 @@ namespace GestionAssociatifERP.IntegrationTests
             Console.WriteLine($"Erreur : {response.StatusCode}, Body: {raw}");
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var responsables = await response.Content.ReadFromJsonAsync<List<LinkPersonneAutoriseeEnfantDto>>();
+            var responsables = await response.Content.ReadFromJsonAsync<List<LinkAuthorizedPersonChildDto>>();
             responsables.ShouldNotBeNull();
-            responsables.ShouldContain(r => r.EnfantId == enfantCreated.Id);
+            responsables.ShouldContain(r => r.ChildId == enfantCreated.Id);
         }
 
         [Fact]
@@ -54,17 +54,17 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "Noa", Prenom = "non_specifie" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "Noa", FirstName = "non_specifie" };
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             personneAutoriseeResponse.EnsureSuccessStatusCode();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkpersonneautoriseeenfant/personne-autorisee/{personneAutoriseeCreated!.Id}");
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var enfants = await response.Content.ReadFromJsonAsync<List<LinkPersonneAutoriseeEnfantDto>>();
+            var enfants = await response.Content.ReadFromJsonAsync<List<LinkAuthorizedPersonChildDto>>();
             enfants.ShouldNotBeNull();
             enfants.ShouldBeEmpty();
         }
@@ -91,22 +91,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
@@ -117,9 +117,9 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<LinkPersonneAutoriseeEnfantDto>>();
+            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<LinkAuthorizedPersonChildDto>>();
             personnesAutorisees.ShouldNotBeNull();
-            personnesAutorisees.ShouldContain(r => r.PersonneAutoriseeId == personneAutoriseeCreated.Id);
+            personnesAutorisees.ShouldContain(r => r.AuthorizedPersonId == personneAutoriseeCreated.Id);
         }
 
         [Fact]
@@ -129,17 +129,17 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "Noa", Prenom = "non_specifie" };
+            var enfant = new CreateChildDto { LastName = "Noa", FirstName = "non_specifie" };
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             enfantResponse.EnsureSuccessStatusCode();
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkpersonneautoriseeenfant/enfant/{enfantCreated!.Id}");
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<LinkPersonneAutoriseeEnfantDto>>();
+            var personnesAutorisees = await response.Content.ReadFromJsonAsync<List<LinkAuthorizedPersonChildDto>>();
             personnesAutorisees.ShouldNotBeNull();
             personnesAutorisees.ShouldBeEmpty();
         }
@@ -166,22 +166,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             var linkResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
@@ -203,16 +203,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/linkpersonneautoriseeenfant/personne-autorisee/{personneAutoriseeCreated!.Id}/enfant/{enfantCreated!.Id}");
@@ -229,22 +229,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             // Act
@@ -252,11 +252,11 @@ namespace GestionAssociatifERP.IntegrationTests
 
             // Assert
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var result = await response.Content.ReadFromJsonAsync<LinkPersonneAutoriseeEnfantDto>();
+            var result = await response.Content.ReadFromJsonAsync<LinkAuthorizedPersonChildDto>();
             result.ShouldNotBeNull();
-            result.EnfantId.ShouldBe(enfantCreated.Id);
-            result.PersonneAutoriseeId.ShouldBe(personneAutoriseeCreated.Id);
-            result.Affiliation.ShouldBe("TestAffiliation");
+            result.ChildId.ShouldBe(enfantCreated.Id);
+            result.AuthorizedPersonId.ShouldBe(personneAutoriseeCreated.Id);
+            result.Relationship.ShouldBe("TestAffiliation");
         }
 
         [Fact]
@@ -266,23 +266,23 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createEnfantDto = new CreateEnfantDto
+            var createEnfantDto = new CreateChildDto
             {
-                Nom = "Test",
-                Prenom = "Enfant",
-                DateNaissance = DateOnly.FromDateTime(DateTime.Today.AddYears(-5)),
-                Civilite = "M"
+                LastName = "Test",
+                FirstName = "Enfant",
+                BirthDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-5)),
+                Gender = "M"
             };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", createEnfantDto);
             enfantResponse.EnsureSuccessStatusCode();
-            var enfant = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
+            var enfant = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfant!.Id,
-                PersonneAutoriseeId = 9999, // Non-existent Personne Autorisee ID
-                Affiliation = "TestAffiliation"
+                ChildId = enfant!.Id,
+                AuthorizedPersonId = 9999, // Non-existent Personne Autorisee ID
+                Relationship = "TestAffiliation"
             };
 
             // Act
@@ -300,22 +300,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createPersonneDto = new CreatePersonneAutoriseeDto
+            var createPersonneDto = new CreateAuthorizedPersonDto
             {
-                Nom = "Test",
-                Prenom = "Autorisee",
-                Telephone = "0600000000"
+                LastName = "Test",
+                FirstName = "Autorisee",
+                Phone = "0600000000"
             };
 
             var personneResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", createPersonneDto);
             personneResponse.EnsureSuccessStatusCode();
-            var personne = await personneResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var personne = await personneResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 9999, // Non-existent Enfant ID
-                PersonneAutoriseeId = personne!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = 9999, // Non-existent Enfant ID
+                AuthorizedPersonId = personne!.Id,
+                Relationship = "TestAffiliation"
             };
 
             // Act
@@ -333,22 +333,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             // First creation
@@ -370,33 +370,33 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             var createResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);
             createResponse.EnsureSuccessStatusCode();
 
             // Update DTO
-            var updateDto = new UpdateLinkPersonneAutoriseeEnfantDto
+            var updateDto = new UpdateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated.Id,
-                Affiliation = "UpdatedAffiliation"
+                ChildId = enfantCreated.Id,
+                AuthorizedPersonId = personneAutoriseeCreated.Id,
+                Relationship = "UpdatedAffiliation"
             };
 
             // Act
@@ -413,11 +413,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateLinkPersonneAutoriseeEnfantDto
+            var updateDto = new UpdateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 9999,
-                PersonneAutoriseeId = 9999,
-                Affiliation = "UpdatedAffiliation"
+                ChildId = 9999,
+                AuthorizedPersonId = 9999,
+                Relationship = "UpdatedAffiliation"
             };
 
             // Act
@@ -435,22 +435,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var enfant = new CreateEnfantDto { Nom = "TestEnfant", Prenom = "Enfant" };
-            var personneAutorisee = new CreatePersonneAutoriseeDto { Nom = "TestAutorisee", Prenom = "Autorisee" };
+            var enfant = new CreateChildDto { LastName = "TestEnfant", FirstName = "Enfant" };
+            var personneAutorisee = new CreateAuthorizedPersonDto { LastName = "TestAutorisee", FirstName = "Autorisee" };
 
             var enfantResponse = await client.PostAsJsonAsync("/api/v1/enfants", enfant);
             var personneAutoriseeResponse = await client.PostAsJsonAsync("/api/v1/personnesautorisees", personneAutorisee);
             enfantResponse.EnsureSuccessStatusCode();
             personneAutoriseeResponse.EnsureSuccessStatusCode();
 
-            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<EnfantDto>();
-            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<PersonneAutoriseeDto>();
+            var enfantCreated = await enfantResponse.Content.ReadFromJsonAsync<ChildDto>();
+            var personneAutoriseeCreated = await personneAutoriseeResponse.Content.ReadFromJsonAsync<AuthorizedPersonDto>();
 
-            var linkDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var linkDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = enfantCreated!.Id,
-                PersonneAutoriseeId = personneAutoriseeCreated!.Id,
-                Affiliation = "TestAffiliation"
+                ChildId = enfantCreated!.Id,
+                AuthorizedPersonId = personneAutoriseeCreated!.Id,
+                Relationship = "TestAffiliation"
             };
 
             var createResponse = await client.PostAsJsonAsync("/api/v1/linkpersonneautoriseeenfant", linkDto);

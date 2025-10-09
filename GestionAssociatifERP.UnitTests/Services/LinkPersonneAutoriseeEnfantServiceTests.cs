@@ -11,20 +11,20 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class LinkPersonneAutoriseeEnfantServiceTests
     {
-        private readonly ILinkPersonneAutoriseeEnfantService _linkPersonneAutoriseeEnfantService;
-        private readonly Mock<IPersonneAutoriseeEnfantRepository> _personneAutoriseeEnfantRepositoryMock;
-        private readonly Mock<IPersonneAutoriseeRepository> _personneAutoriseeRepositoryMock;
-        private readonly Mock<IEnfantRepository> _enfantRepositoryMock;
+        private readonly ILinkAuthorizedPersonChildService _linkPersonneAutoriseeEnfantService;
+        private readonly Mock<IAuthorizedPersonChildRepository> _personneAutoriseeEnfantRepositoryMock;
+        private readonly Mock<IAuthorizedPersonRepository> _personneAutoriseeRepositoryMock;
+        private readonly Mock<IChildRepository> _enfantRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public LinkPersonneAutoriseeEnfantServiceTests()
         {
-            _personneAutoriseeEnfantRepositoryMock = new Mock<IPersonneAutoriseeEnfantRepository>();
-            _personneAutoriseeRepositoryMock = new Mock<IPersonneAutoriseeRepository>();
-            _enfantRepositoryMock = new Mock<IEnfantRepository>();
+            _personneAutoriseeEnfantRepositoryMock = new Mock<IAuthorizedPersonChildRepository>();
+            _personneAutoriseeRepositoryMock = new Mock<IAuthorizedPersonRepository>();
+            _enfantRepositoryMock = new Mock<IChildRepository>();
             _mapperMock = new Mock<IMapper>();
 
-            _linkPersonneAutoriseeEnfantService = new LinkPersonneAutoriseeEnfantService(
+            _linkPersonneAutoriseeEnfantService = new LinkAuthorizedPersonChildService(
                 _personneAutoriseeEnfantRepositoryMock.Object,
                 _enfantRepositoryMock.Object,
                 _personneAutoriseeRepositoryMock.Object,
@@ -41,10 +41,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { EnfantId = 1, PersonneAutoriseeId = 2 }
             };
 
-            var dtos = new List<LinkPersonneAutoriseeEnfantDto>
+            var dtos = new List<LinkAuthorizedPersonChildDto>
             {
-                new() { EnfantId = 1, PersonneAutoriseeId = 1 },
-                new() { EnfantId = 1, PersonneAutoriseeId = 2 }
+                new() { ChildId = 1, AuthorizedPersonId = 1 },
+                new() { ChildId = 1, AuthorizedPersonId = 2 }
             };
 
             _enfantRepositoryMock
@@ -52,15 +52,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetPersonnesAutoriseesByEnfantIdAsync(1))
+                .Setup(repo => repo.GetAuthorizedPeopleByChildIdAsync(1))
                 .ReturnsAsync(links);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkPersonneAutoriseeEnfantDto>>(links))
+                .Setup(m => m.Map<IEnumerable<LinkAuthorizedPersonChildDto>>(links))
                 .Returns(dtos);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetPersonnesAutoriseesByEnfantIdAsync(1);
+            var result = await _linkPersonneAutoriseeEnfantService.GetAuthorizedPeopleByChildIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -76,7 +76,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetPersonnesAutoriseesByEnfantIdAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetAuthorizedPeopleByChildIdAsync(1));
 
             // Assert
             exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
@@ -91,15 +91,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetPersonnesAutoriseesByEnfantIdAsync(1))
+                .Setup(repo => repo.GetAuthorizedPeopleByChildIdAsync(1))
                 .ReturnsAsync(new List<PersonneAutoriseeEnfant>());
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkPersonneAutoriseeEnfantDto>>(It.IsAny<IEnumerable<PersonneAutoriseeEnfant>>()))
-                .Returns(new List<LinkPersonneAutoriseeEnfantDto>());
+                .Setup(m => m.Map<IEnumerable<LinkAuthorizedPersonChildDto>>(It.IsAny<IEnumerable<PersonneAutoriseeEnfant>>()))
+                .Returns(new List<LinkAuthorizedPersonChildDto>());
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetPersonnesAutoriseesByEnfantIdAsync(1);
+            var result = await _linkPersonneAutoriseeEnfantService.GetAuthorizedPeopleByChildIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -116,10 +116,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { EnfantId = 2, PersonneAutoriseeId = 2 }
             };
 
-            var dtos = new List<LinkPersonneAutoriseeEnfantDto>
+            var dtos = new List<LinkAuthorizedPersonChildDto>
             {
-                new() { EnfantId = 1, PersonneAutoriseeId = 2 },
-                new() { EnfantId = 2, PersonneAutoriseeId = 2 }
+                new() { ChildId = 1, AuthorizedPersonId = 2 },
+                new() { ChildId = 2, AuthorizedPersonId = 2 }
             };
 
             _personneAutoriseeRepositoryMock
@@ -127,15 +127,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(r => r.GetEnfantsByPersonneAutoriseeIdAsync(2))
+                .Setup(r => r.GetChildrenByAuthorizedPersonIdAsync(2))
                 .ReturnsAsync(links);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkPersonneAutoriseeEnfantDto>>(links))
+                .Setup(m => m.Map<IEnumerable<LinkAuthorizedPersonChildDto>>(links))
                 .Returns(dtos);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetEnfantsByPersonneAutoriseeIdAsync(2);
+            var result = await _linkPersonneAutoriseeEnfantService.GetChildrenByAuthorizedPersonIdAsync(2);
 
             // Assert
             result.ShouldNotBeNull();
@@ -151,7 +151,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetEnfantsByPersonneAutoriseeIdAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.GetChildrenByAuthorizedPersonIdAsync(1));
 
             // Assert
             exception.Message.ShouldBe("La personne autorisée spécifiée n'existe pas.");
@@ -166,15 +166,15 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetEnfantsByPersonneAutoriseeIdAsync(1))
+                .Setup(repo => repo.GetChildrenByAuthorizedPersonIdAsync(1))
                 .ReturnsAsync(new List<PersonneAutoriseeEnfant>());
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<LinkPersonneAutoriseeEnfantDto>>(It.IsAny<IEnumerable<PersonneAutoriseeEnfant>>()))
-                .Returns(new List<LinkPersonneAutoriseeEnfantDto>());
+                .Setup(m => m.Map<IEnumerable<LinkAuthorizedPersonChildDto>>(It.IsAny<IEnumerable<PersonneAutoriseeEnfant>>()))
+                .Returns(new List<LinkAuthorizedPersonChildDto>());
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.GetEnfantsByPersonneAutoriseeIdAsync(1);
+            var result = await _linkPersonneAutoriseeEnfantService.GetChildrenByAuthorizedPersonIdAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -190,7 +190,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkPersonneAutoriseeEnfantAsync(1, 1);
+            var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkAuthorizedPersonChildAsync(1, 1);
 
             // Assert
             result.ShouldBeTrue();
@@ -205,7 +205,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkPersonneAutoriseeEnfantAsync(1, 1);
+            var result = await _linkPersonneAutoriseeEnfantService.ExistsLinkAuthorizedPersonChildAsync(1, 1);
 
             // Assert
             result.ShouldBeFalse();
@@ -215,32 +215,32 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenValid_ShouldReturnDto()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             var newPersonneAutoriseeEnfant = new PersonneAutoriseeEnfant
             {
-                EnfantId = newPersonneAutoriseeEnfantDto.EnfantId,
-                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.PersonneAutoriseeId,
-                Affiliation = newPersonneAutoriseeEnfantDto.Affiliation
+                EnfantId = newPersonneAutoriseeEnfantDto.ChildId,
+                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.AuthorizedPersonId,
+                Affiliation = newPersonneAutoriseeEnfantDto.Relationship
             };
 
             var createdPersonneAutoriseeEnfant = new PersonneAutoriseeEnfant
             {
-                EnfantId = newPersonneAutoriseeEnfantDto.EnfantId,
-                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.PersonneAutoriseeId,
-                Affiliation = newPersonneAutoriseeEnfantDto.Affiliation
+                EnfantId = newPersonneAutoriseeEnfantDto.ChildId,
+                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.AuthorizedPersonId,
+                Affiliation = newPersonneAutoriseeEnfantDto.Relationship
             };
 
-            var createdPersonneAutoriseeEnfantDto = new LinkPersonneAutoriseeEnfantDto
+            var createdPersonneAutoriseeEnfantDto = new LinkAuthorizedPersonChildDto
             {
-                EnfantId = newPersonneAutoriseeEnfantDto.EnfantId,
-                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.PersonneAutoriseeId,
-                Affiliation = newPersonneAutoriseeEnfantDto.Affiliation
+                ChildId = newPersonneAutoriseeEnfantDto.ChildId,
+                AuthorizedPersonId = newPersonneAutoriseeEnfantDto.AuthorizedPersonId,
+                Relationship = newPersonneAutoriseeEnfantDto.Relationship
             };
 
             _personneAutoriseeRepositoryMock
@@ -252,7 +252,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -264,32 +264,32 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetLinkAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.GetLinkAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(createdPersonneAutoriseeEnfant);
 
             _mapperMock
-                .Setup(m => m.Map<LinkPersonneAutoriseeEnfantDto>(createdPersonneAutoriseeEnfant))
+                .Setup(m => m.Map<LinkAuthorizedPersonChildDto>(createdPersonneAutoriseeEnfant))
                 .Returns(createdPersonneAutoriseeEnfantDto);
 
             // Act
-            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto);
+            var result = await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto);
 
             // Assert
             result.ShouldNotBeNull();
-            result.PersonneAutoriseeId.ShouldBe(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId);
-            result.EnfantId.ShouldBe(newPersonneAutoriseeEnfantDto.EnfantId);
-            result.Affiliation.ShouldBe("Mère");
+            result.AuthorizedPersonId.ShouldBe(newPersonneAutoriseeEnfantDto.AuthorizedPersonId);
+            result.ChildId.ShouldBe(newPersonneAutoriseeEnfantDto.ChildId);
+            result.Relationship.ShouldBe("Mère");
         }
 
         [Fact]
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenPersonneAutoriseeDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             _personneAutoriseeRepositoryMock
@@ -301,7 +301,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("La personne autorisée spécifiée n'existe pas.");
@@ -311,11 +311,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenEnfantDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             _personneAutoriseeRepositoryMock
@@ -327,7 +327,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("L'enfant spécifié n'existe pas.");
@@ -337,11 +337,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenLinkAlreadyExists_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             _personneAutoriseeRepositoryMock
@@ -353,11 +353,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(true);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("Ce lien existe déjà entre cette personne autorisée et cet enfant.");
@@ -367,11 +367,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             _personneAutoriseeRepositoryMock
@@ -383,7 +383,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -391,7 +391,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("Erreur lors de la création du lien Personne Autorisée / Enfant : Le Mapping a échoué.");
@@ -401,18 +401,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateLinkPersonneAutoriseeEnfantAsync_WhenGetLinkReturnsNull_ShouldReturnFail()
         {
             // Arrange
-            var newPersonneAutoriseeEnfantDto = new CreateLinkPersonneAutoriseeEnfantDto
+            var newPersonneAutoriseeEnfantDto = new CreateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère"
             };
 
             var newPersonneAutoriseeEnfant = new PersonneAutoriseeEnfant
             {
-                EnfantId = newPersonneAutoriseeEnfantDto.EnfantId,
-                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.PersonneAutoriseeId,
-                Affiliation = newPersonneAutoriseeEnfantDto.Affiliation
+                EnfantId = newPersonneAutoriseeEnfantDto.ChildId,
+                PersonneAutoriseeId = newPersonneAutoriseeEnfantDto.AuthorizedPersonId,
+                Affiliation = newPersonneAutoriseeEnfantDto.Relationship
             };
 
             _personneAutoriseeRepositoryMock
@@ -424,7 +424,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(true);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.LinkExistsAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(false);
 
             _mapperMock
@@ -436,11 +436,11 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetLinkAsync(newPersonneAutoriseeEnfantDto.PersonneAutoriseeId, newPersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.GetLinkAsync(newPersonneAutoriseeEnfantDto.AuthorizedPersonId, newPersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkPersonneAutoriseeEnfantAsync(newPersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.CreateLinkAuthorizedPersonChildAsync(newPersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("Échec de la création du lien Personne Autorisée / Enfant.");
@@ -450,26 +450,26 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task UpdateLinkPersonneAutoriseeEnfantAsync_WhenLinkExists_ShouldReturnSuccess()
         {
             // Arrange
-            var updatePersonneAutoriseeEnfantDto = new UpdateLinkPersonneAutoriseeEnfantDto
+            var updatePersonneAutoriseeEnfantDto = new UpdateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère",
-                ContactUrgence = true,
-                Commentaire = "Commentaire"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère",
+                EmergencyContact = true,
+                Comment = "Commentaire"
             };
 
             var existingPersonneAutoriseeEnfant = new PersonneAutoriseeEnfant
             {
-                EnfantId = updatePersonneAutoriseeEnfantDto.EnfantId,
-                PersonneAutoriseeId = updatePersonneAutoriseeEnfantDto.PersonneAutoriseeId,
-                Affiliation = updatePersonneAutoriseeEnfantDto.Affiliation,
+                EnfantId = updatePersonneAutoriseeEnfantDto.ChildId,
+                PersonneAutoriseeId = updatePersonneAutoriseeEnfantDto.AuthorizedPersonId,
+                Affiliation = updatePersonneAutoriseeEnfantDto.Relationship,
                 ContactUrgence = false,
                 Commentaire = null
             };
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetLinkAsync(updatePersonneAutoriseeEnfantDto.PersonneAutoriseeId, updatePersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.GetLinkAsync(updatePersonneAutoriseeEnfantDto.AuthorizedPersonId, updatePersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync(existingPersonneAutoriseeEnfant);
 
             _mapperMock
@@ -483,28 +483,28 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto));
+            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkAuthorizedPersonChildAsync(updatePersonneAutoriseeEnfantDto));
         }
 
         [Fact]
         public async Task UpdateLinkPersonneAutoriseeEnfantAsync_WhenLinkDoesNotExist_ShouldReturnFail()
         {
             // Arrange
-            var updatePersonneAutoriseeEnfantDto = new UpdateLinkPersonneAutoriseeEnfantDto
+            var updatePersonneAutoriseeEnfantDto = new UpdateLinkAuthorizedPersonChildDto
             {
-                EnfantId = 1,
-                PersonneAutoriseeId = 2,
-                Affiliation = "Mère",
-                ContactUrgence = true,
-                Commentaire = "Commentaire"
+                ChildId = 1,
+                AuthorizedPersonId = 2,
+                Relationship = "Mère",
+                EmergencyContact = true,
+                Comment = "Commentaire"
             };
 
             _personneAutoriseeEnfantRepositoryMock
-                .Setup(repo => repo.GetLinkAsync(updatePersonneAutoriseeEnfantDto.PersonneAutoriseeId, updatePersonneAutoriseeEnfantDto.EnfantId))
+                .Setup(repo => repo.GetLinkAsync(updatePersonneAutoriseeEnfantDto.AuthorizedPersonId, updatePersonneAutoriseeEnfantDto.ChildId))
                 .ReturnsAsync((PersonneAutoriseeEnfant)null!);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkPersonneAutoriseeEnfantAsync(updatePersonneAutoriseeEnfantDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.UpdateLinkAuthorizedPersonChildAsync(updatePersonneAutoriseeEnfantDto));
 
             // Assert
             exception.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");
@@ -521,7 +521,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1));
+            await Should.NotThrowAsync(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkAuthorizedPersonChildAsync(2, 1));
         }
 
         [Fact]
@@ -533,7 +533,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(false);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkPersonneAutoriseeEnfantAsync(2, 1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _linkPersonneAutoriseeEnfantService.RemoveLinkAuthorizedPersonChildAsync(2, 1));
 
             // Assert
             exception.Message.ShouldBe("Le lien Personne Autorisée / Enfant n'existe pas.");

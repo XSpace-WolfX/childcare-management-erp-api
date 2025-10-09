@@ -10,15 +10,15 @@ namespace GestionAssociatifERP.UnitTests.Services
 {
     public class ResponsableServiceTests
     {
-        private readonly IResponsableService _responsableService;
-        private readonly Mock<IResponsableRepository> _responsableRepositoryMock;
+        private readonly IGuardianService _responsableService;
+        private readonly Mock<IGuardianRepository> _responsableRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
 
         public ResponsableServiceTests()
         {
-            _responsableRepositoryMock = new Mock<IResponsableRepository>();
+            _responsableRepositoryMock = new Mock<IGuardianRepository>();
             _mapperMock = new Mock<IMapper>();
-            _responsableService = new ResponsableService(_responsableRepositoryMock.Object, _mapperMock.Object);
+            _responsableService = new GuardianService(_responsableRepositoryMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.UnitTests.Services
                 new() { Id = 2, Prenom = "Jane", Nom = "Smith" }
             };
 
-            var responsablesDto = new List<ResponsableDto>
+            var responsablesDto = new List<GuardianDto>
             {
-                new() { Id = 1, Prenom = "John", Nom = "Doe" },
-                new() { Id = 2, Prenom = "Jane", Nom = "Smith" }
+                new() { Id = 1, FirstName = "John", LastName = "Doe" },
+                new() { Id = 2, FirstName = "Jane", LastName = "Smith" }
             };
 
             _responsableRepositoryMock
@@ -42,16 +42,16 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(responsables);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<ResponsableDto>>(responsables))
+                .Setup(m => m.Map<IEnumerable<GuardianDto>>(responsables))
                 .Returns(responsablesDto);
 
             // Act
-            var result = await _responsableService.GetAllResponsablesAsync();
+            var result = await _responsableService.GetAllGuardiansAsync();
 
             // Assert
             result.ShouldNotBeNull();
             result.Count().ShouldBe(2);
-            result.ShouldContain(e => e.Nom == "Doe");
+            result.ShouldContain(e => e.LastName == "Doe");
         }
 
         [Fact]
@@ -59,18 +59,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var responsables = new List<Responsable>();
-            var responsablesDto = new List<ResponsableDto>();
+            var responsablesDto = new List<GuardianDto>();
 
             _responsableRepositoryMock
                 .Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(responsables);
 
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<ResponsableDto>>(responsables))
+                .Setup(m => m.Map<IEnumerable<GuardianDto>>(responsables))
                 .Returns(responsablesDto);
 
             // Act
-            var result = await _responsableService.GetAllResponsablesAsync();
+            var result = await _responsableService.GetAllGuardiansAsync();
 
             // Assert
             result.ShouldNotBeNull();
@@ -82,18 +82,18 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var responsable = new Responsable { Id = 1, Prenom = "John", Nom = "Doe" };
-            var responsableDto = new ResponsableDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var responsableDto = new GuardianDto { Id = 1, FirstName = "John", LastName = "Doe" };
 
             _responsableRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableDto>(responsable))
+                .Setup(m => m.Map<GuardianDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableAsync(1);
+            var result = await _responsableService.GetGuardianAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
@@ -109,7 +109,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetGuardianAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
@@ -131,36 +131,36 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var responsableDto = new ResponsableWithInformationFinanciereDto
+            var responsableDto = new GuardianWithFinancialInformationDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                InformationFinanciere = new InformationFinanciereDto
+                FirstName = "John",
+                LastName = "Doe",
+                FinancialInformation = new FinancialInformationDto
                 {
                     Id = 1,
-                    QuotientFamiliale = 1000
+                    FamilyQuotient = 1000
                 }
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithInformationFinanciereAsync(1))
+                .Setup(repo => repo.GetWithFinancialInformationAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithInformationFinanciereDto>(responsable))
+                .Setup(m => m.Map<GuardianWithFinancialInformationDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithInformationFinanciereAsync(1);
+            var result = await _responsableService.GetGuardianWithFinancialInformationAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Nom.ShouldBe("Doe");
-            result.InformationFinanciere.ShouldNotBeNull();
-            result.InformationFinanciere.Id.ShouldBe(1);
-            result.InformationFinanciere.QuotientFamiliale.ShouldBe(1000);
+            result.LastName.ShouldBe("Doe");
+            result.FinancialInformation.ShouldNotBeNull();
+            result.FinancialInformation.Id.ShouldBe(1);
+            result.FinancialInformation.FamilyQuotient.ShouldBe(1000);
         }
 
         [Fact]
@@ -174,30 +174,30 @@ namespace GestionAssociatifERP.UnitTests.Services
                 Nom = "Doe"
             };
 
-            var responsableDto = new ResponsableWithInformationFinanciereDto
+            var responsableDto = new GuardianWithFinancialInformationDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                InformationFinanciere = null
+                FirstName = "John",
+                LastName = "Doe",
+                FinancialInformation = null
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithInformationFinanciereAsync(1))
+                .Setup(repo => repo.GetWithFinancialInformationAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithInformationFinanciereDto>(responsable))
+                .Setup(m => m.Map<GuardianWithFinancialInformationDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithInformationFinanciereAsync(1);
+            var result = await _responsableService.GetGuardianWithFinancialInformationAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Nom.ShouldBe("Doe");
-            result.InformationFinanciere.ShouldBeNull();
+            result.LastName.ShouldBe("Doe");
+            result.FinancialInformation.ShouldBeNull();
         }
 
         [Fact]
@@ -205,11 +205,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithInformationFinanciereAsync(1))
+                .Setup(repo => repo.GetWithFinancialInformationAsync(1))
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithInformationFinanciereAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetGuardianWithFinancialInformationAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
@@ -231,37 +231,37 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var responsableDto = new ResponsableWithSituationPersonnelleDto
+            var responsableDto = new GuardianWithPersonalSituationDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                SituationPersonnelle = new SituationPersonnelleDto
+                FirstName = "John",
+                LastName = "Doe",
+                PersonalSituation = new PersonalSituationDto
                 {
                     Id = 1,
-                    SituationFamiliale = "Célibataire"
+                    FamilySituation = "Célibataire"
                 }
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithSituationPersonnelleAsync(1))
+                .Setup(repo => repo.GetWithPersonalSituationAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithSituationPersonnelleDto>(responsable))
+                .Setup(m => m.Map<GuardianWithPersonalSituationDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithSituationPersonnelleAsync(1);
+            var result = await _responsableService.GetGuardianWithPersonalSituationAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.SituationPersonnelle.ShouldNotBeNull();
-            result.SituationPersonnelle.Id.ShouldBe(1);
-            result.SituationPersonnelle.SituationFamiliale.ShouldBe("Célibataire");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.PersonalSituation.ShouldNotBeNull();
+            result.PersonalSituation.Id.ShouldBe(1);
+            result.PersonalSituation.FamilySituation.ShouldBe("Célibataire");
         }
 
         [Fact]
@@ -275,31 +275,31 @@ namespace GestionAssociatifERP.UnitTests.Services
                 Nom = "Doe"
             };
 
-            var responsableDto = new ResponsableWithSituationPersonnelleDto
+            var responsableDto = new GuardianWithPersonalSituationDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                SituationPersonnelle = null
+                FirstName = "John",
+                LastName = "Doe",
+                PersonalSituation = null
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithSituationPersonnelleAsync(1))
+                .Setup(repo => repo.GetWithPersonalSituationAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithSituationPersonnelleDto>(responsable))
+                .Setup(m => m.Map<GuardianWithPersonalSituationDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithSituationPersonnelleAsync(1);
+            var result = await _responsableService.GetGuardianWithPersonalSituationAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.SituationPersonnelle.ShouldBeNull();
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.PersonalSituation.ShouldBeNull();
         }
 
         [Fact]
@@ -307,11 +307,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithSituationPersonnelleAsync(1))
+                .Setup(repo => repo.GetWithPersonalSituationAsync(1))
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithSituationPersonnelleAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetGuardianWithPersonalSituationAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
@@ -333,37 +333,37 @@ namespace GestionAssociatifERP.UnitTests.Services
                 }
             };
 
-            var responsableDto = new ResponsableWithEnfantsDto
+            var responsableDto = new GuardianWithChildrenDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                Enfants = new List<EnfantDto>
+                FirstName = "John",
+                LastName = "Doe",
+                Children = new List<ChildDto>
                 {
-                    new() { Id = 1, Prenom = "Jane", Nom = "Doe" },
-                    new() { Id = 2, Prenom = "Jack", Nom = "Doe" }
+                    new() { Id = 1, FirstName = "Jane", LastName = "Doe" },
+                    new() { Id = 2, FirstName = "Jack", LastName = "Doe" }
                 }
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithEnfantsDto>(responsable))
+                .Setup(m => m.Map<GuardianWithChildrenDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithEnfantsAsync(1);
+            var result = await _responsableService.GetGuardianWithChildrenAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.Count.ShouldBe(2);
-            result.Enfants.ShouldContain(e => e.Prenom == "Jane" && e.Nom == "Doe");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.Children.ShouldNotBeNull();
+            result.Children.Count.ShouldBe(2);
+            result.Children.ShouldContain(e => e.FirstName == "Jane" && e.LastName == "Doe");
         }
 
         [Fact]
@@ -378,32 +378,32 @@ namespace GestionAssociatifERP.UnitTests.Services
                 ResponsableEnfants = new List<ResponsableEnfant>()
             };
 
-            var responsableDto = new ResponsableWithEnfantsDto
+            var responsableDto = new GuardianWithChildrenDto
             {
                 Id = 1,
-                Prenom = "John",
-                Nom = "Doe",
-                Enfants = new List<EnfantDto>()
+                FirstName = "John",
+                LastName = "Doe",
+                Children = new List<ChildDto>()
             };
 
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableWithEnfantsDto>(responsable))
+                .Setup(m => m.Map<GuardianWithChildrenDto>(responsable))
                 .Returns(responsableDto);
 
             // Act
-            var result = await _responsableService.GetResponsableWithEnfantsAsync(1);
+            var result = await _responsableService.GetGuardianWithChildrenAsync(1);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
-            result.Enfants.ShouldNotBeNull();
-            result.Enfants.ShouldBeEmpty();
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
+            result.Children.ShouldNotBeNull();
+            result.Children.ShouldBeEmpty();
         }
 
         [Fact]
@@ -411,11 +411,11 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             _responsableRepositoryMock
-                .Setup(repo => repo.GetWithEnfantsAsync(1))
+                .Setup(repo => repo.GetWithChildrenAsync(1))
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetResponsableWithEnfantsAsync(1));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.GetGuardianWithChildrenAsync(1));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
@@ -425,9 +425,9 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateResponsableAsync_WhenResponsableIsCreated_ShouldReturnMappedDto()
         {
             // Arrange
-            var newResponsableDto = new CreateResponsableDto { Prenom = "John", Nom = "Doe" };
+            var newResponsableDto = new CreateGuardianDto { FirstName = "John", LastName = "Doe" };
             var responsable = new Responsable { Id = 1, Prenom = "John", Nom = "Doe" };
-            var createdResponsableDto = new ResponsableDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var createdResponsableDto = new GuardianDto { Id = 1, FirstName = "John", LastName = "Doe" };
 
             _mapperMock
                 .Setup(m => m.Map<Responsable>(newResponsableDto))
@@ -442,17 +442,17 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(responsable);
 
             _mapperMock
-                .Setup(m => m.Map<ResponsableDto>(responsable))
+                .Setup(m => m.Map<GuardianDto>(responsable))
                 .Returns(createdResponsableDto);
 
             // Act
-            var result = await _responsableService.CreateResponsableAsync(newResponsableDto);
+            var result = await _responsableService.CreateGuardianAsync(newResponsableDto);
 
             // Assert
             result.ShouldNotBeNull();
             result.Id.ShouldBe(1);
-            result.Prenom.ShouldBe("John");
-            result.Nom.ShouldBe("Doe");
+            result.FirstName.ShouldBe("John");
+            result.LastName.ShouldBe("Doe");
 
             _responsableRepositoryMock.Verify(repo => repo.AddAsync(responsable), Times.Once);
         }
@@ -461,14 +461,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         public async Task CreateResponsableAsync_WhenMappingFails_ShouldReturnFail()
         {
             // Arrange
-            var newResponsableDto = new CreateResponsableDto { Prenom = "John", Nom = "Doe" };
+            var newResponsableDto = new CreateGuardianDto { FirstName = "John", LastName = "Doe" };
 
             _mapperMock
                 .Setup(m => m.Map<Responsable>(newResponsableDto))
                 .Returns((Responsable)null!);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.CreateResponsableAsync(newResponsableDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.CreateGuardianAsync(newResponsableDto));
 
             // Assert
             exception.Message.ShouldBe("Erreur lors de la création du responsable : Le Mapping a échoué.");
@@ -481,7 +481,7 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateResponsableDto = new UpdateResponsableDto { Id = 1, Prenom = "John", Nom = "Doe" };
+            var updateResponsableDto = new UpdateGuardianDto { Id = 1, FirstName = "John", LastName = "Doe" };
             var responsable = new Responsable { Id = id, Prenom = "John", Nom = "Doe" };
 
             _responsableRepositoryMock
@@ -499,7 +499,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
+            await Should.NotThrowAsync(async () => await _responsableService.UpdateGuardianAsync(id, updateResponsableDto));
 
             _responsableRepositoryMock.Verify(repo => repo.UpdateAsync(responsable), Times.Once);
         }
@@ -509,10 +509,10 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateResponsableDto = new UpdateResponsableDto { Id = 2, Prenom = "John", Nom = "Doe" };
+            var updateResponsableDto = new UpdateGuardianDto { Id = 2, FirstName = "John", LastName = "Doe" };
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateGuardianAsync(id, updateResponsableDto));
 
             // Assert
             exception.Message.ShouldBe("L'identifiant du responsable ne correspond pas à celui de l'objet envoyé.");
@@ -525,14 +525,14 @@ namespace GestionAssociatifERP.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var updateResponsableDto = new UpdateResponsableDto { Id = id, Prenom = "John", Nom = "Doe" };
+            var updateResponsableDto = new UpdateGuardianDto { Id = id, FirstName = "John", LastName = "Doe" };
 
             _responsableRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateResponsableAsync(id, updateResponsableDto));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.UpdateGuardianAsync(id, updateResponsableDto));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
@@ -558,7 +558,7 @@ namespace GestionAssociatifERP.UnitTests.Services
             // Act
 
             // Assert
-            await Should.NotThrowAsync(async () => await _responsableService.DeleteResponsableAsync(id));
+            await Should.NotThrowAsync(async () => await _responsableService.DeleteGuardianAsync(id));
 
             _responsableRepositoryMock.Verify(repo => repo.DeleteAsync(id), Times.Once);
         }
@@ -574,7 +574,7 @@ namespace GestionAssociatifERP.UnitTests.Services
                 .ReturnsAsync(null as Responsable);
 
             // Act
-            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.DeleteResponsableAsync(id));
+            var exception = await Should.ThrowAsync<Exception>(async () => await _responsableService.DeleteGuardianAsync(id));
 
             // Assert
             exception.Message.ShouldBe("Aucun responsable correspondant n'a été trouvé.");
