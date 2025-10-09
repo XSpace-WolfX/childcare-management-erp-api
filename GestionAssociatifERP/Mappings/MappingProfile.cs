@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using GestionAssociatifERP.Dtos.V1;
-using GestionAssociatifERP.Models;
+using GestionAssociatifERP.Infrastructure.Persistence.Models;
 
 namespace GestionAssociatifERP.Mappings
 {
@@ -8,48 +8,48 @@ namespace GestionAssociatifERP.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<Responsable, ResponsableDto>();
-            CreateMap<Responsable, ResponsableWithInformationFinanciereDto>();
-            CreateMap<Responsable, ResponsableWithSituationPersonnelleDto>();
-            CreateMap<Responsable, ResponsableWithEnfantsDto>()
-                .ForMember(dest => dest.Enfants, opt => opt.MapFrom(src => src.ResponsableEnfants.Select(re => re.Enfant)));
-            CreateMap<CreateResponsableDto, Responsable>();
-            CreateMap<UpdateResponsableDto, Responsable>();
+            CreateMap<Guardian, GuardianDto>();
+            CreateMap<Guardian, GuardianWithFinancialInformationDto>();
+            CreateMap<Guardian, GuardianWithPersonalSituationDto>();
+            CreateMap<Guardian, GuardianWithChildrenDto>()
+                .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.GuardianChildren.Select(gc => gc.Child)));
+            CreateMap<CreateGuardianDto, Guardian>();
+            CreateMap<UpdateGuardianDto, Guardian>();
 
-            CreateMap<Enfant, EnfantDto>();
-            CreateMap<Enfant, EnfantWithResponsablesDto>()
-                .ForMember(dest => dest.Responsables, opt => opt.MapFrom(src => src.ResponsableEnfants.Select(re => re.Responsable)));
-            CreateMap<Enfant, EnfantWithPersonnesAutoriseesDto>()
-                .ForMember(dest => dest.PersonnesAutorisees, opt => opt.MapFrom(src => src.PersonneAutoriseeEnfants.Select(pa => pa.PersonneAutorisee)));
-            CreateMap<Enfant, EnfantWithDonneesSupplementairesDto>();
-            CreateMap<CreateEnfantDto, Enfant>();
-            CreateMap<UpdateEnfantDto, Enfant>();
+            CreateMap<Child, ChildDto>();
+            CreateMap<Child, ChildWithGuardiansDto>()
+                .ForMember(dest => dest.Guardians, opt => opt.MapFrom(src => src.GuardianChildren.Select(gc => gc.Guardian)));
+            CreateMap<Child, ChildWithAuthorizedPeopleDto>()
+                .ForMember(dest => dest.AuthorizedPeople, opt => opt.MapFrom(src => src.AuthorizedPersonChildren.Select(apc => apc.AuthorizedPerson)));
+            CreateMap<Child, ChildWithAdditionalDatasDto>();
+            CreateMap<CreateChildDto, Child>();
+            CreateMap<UpdateChildDto, Child>();
 
-            CreateMap<InformationFinanciere, InformationFinanciereDto>();
-            CreateMap<CreateInformationFinanciereDto, InformationFinanciere>();
-            CreateMap<UpdateInformationFinanciereDto, InformationFinanciere>();
+            CreateMap<FinancialInformation, FinancialInformationDto>();
+            CreateMap<CreateFinancialInformationDto, FinancialInformation>();
+            CreateMap<UpdateFinancialInformationDto, FinancialInformation>();
 
-            CreateMap<SituationPersonnelle, SituationPersonnelleDto>();
-            CreateMap<CreateSituationPersonnelleDto, SituationPersonnelle>();
-            CreateMap<UpdateSituationPersonnelleDto, SituationPersonnelle>();
+            CreateMap<PersonalSituation, PersonalSituationDto>();
+            CreateMap<CreatePersonalSituationDto, PersonalSituation>();
+            CreateMap<UpdatePersonalSituationDto, PersonalSituation>();
 
-            CreateMap<DonneeSupplementaire, DonneeSupplementaireDto>();
-            CreateMap<CreateDonneeSupplementaireDto, DonneeSupplementaire>();
-            CreateMap<UpdateDonneeSupplementaireDto, DonneeSupplementaire>();
+            CreateMap<AdditionalData, AdditionalDataDto>();
+            CreateMap<CreateAdditionalDataDto, AdditionalData>();
+            CreateMap<UpdateAdditionalDataDto, AdditionalData>();
 
-            CreateMap<PersonneAutorisee, PersonneAutoriseeDto>();
-            CreateMap<PersonneAutorisee, PersonneAutoriseeWithEnfantsDto>()
-                .ForMember(dest => dest.Enfants, opt => opt.MapFrom(src => src.PersonneAutoriseeEnfants.Select(link => link.Enfant)));
-            CreateMap<CreatePersonneAutoriseeDto, PersonneAutorisee>();
-            CreateMap<UpdatePersonneAutoriseeDto, PersonneAutorisee>();
+            CreateMap<AuthorizedPerson, AuthorizedPersonDto>();
+            CreateMap<AuthorizedPerson, AuthorizedPersonWithChildrenDto>()
+                .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.AuthorizedPersonChildren.Select(apc => apc.Child)));
+            CreateMap<CreateAuthorizedPersonDto, AuthorizedPerson>();
+            CreateMap<UpdateAuthorizedPersonDto, AuthorizedPerson>();
 
-            CreateMap<ResponsableEnfant, LinkResponsableEnfantDto>();
-            CreateMap<CreateLinkResponsableEnfantDto, ResponsableEnfant>();
-            CreateMap<UpdateLinkResponsableEnfantDto, ResponsableEnfant>();
+            CreateMap<GuardianChild, LinkGuardianChildDto>();
+            CreateMap<CreateLinkGuardianChildDto, GuardianChild>();
+            CreateMap<UpdateLinkGuardianChildDto, GuardianChild>();
 
-            CreateMap<PersonneAutoriseeEnfant, LinkPersonneAutoriseeEnfantDto>();
-            CreateMap<CreateLinkPersonneAutoriseeEnfantDto, PersonneAutoriseeEnfant>();
-            CreateMap<UpdateLinkPersonneAutoriseeEnfantDto, PersonneAutoriseeEnfant>();
+            CreateMap<AuthorizedPersonChild, LinkAuthorizedPersonChildDto>();
+            CreateMap<CreateLinkAuthorizedPersonChildDto, AuthorizedPersonChild>();
+            CreateMap<UpdateLinkAuthorizedPersonChildDto, AuthorizedPersonChild>();
         }
     }
 }

@@ -15,10 +15,10 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/situationspersonnelles";
-            var dto = new CreateSituationPersonnelleDto
+            var dto = new CreatePersonalSituationDto
             {
                 Regime = "Test Regime",
-                SituationFamiliale = "Description de la situation"
+                FamilySituation = "Description de la situation"
             };
             var postResponse = await client.PostAsJsonAsync(url, dto);
             postResponse.EnsureSuccessStatusCode();
@@ -30,9 +30,9 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var situationsPersonnelles = await response.Content.ReadFromJsonAsync<List<SituationPersonnelleDto>>();
+            var situationsPersonnelles = await response.Content.ReadFromJsonAsync<List<PersonalSituationDto>>();
             situationsPersonnelles.ShouldNotBeNull();
-            situationsPersonnelles.ShouldContain(e => e.SituationFamiliale == "Description de la situation");
+            situationsPersonnelles.ShouldContain(e => e.FamilySituation == "Description de la situation");
             situationsPersonnelles.ShouldContain(e => e.Regime == "Test Regime");
         }
 
@@ -50,7 +50,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var situationsPersonnelles = await response.Content.ReadFromJsonAsync<List<SituationPersonnelleDto>>();
+            var situationsPersonnelles = await response.Content.ReadFromJsonAsync<List<PersonalSituationDto>>();
             situationsPersonnelles.ShouldNotBeNull();
             situationsPersonnelles.ShouldBeEmpty();
         }
@@ -62,16 +62,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateSituationPersonnelleDto
+            var createDto = new CreatePersonalSituationDto
             {
                 Regime = "Test Regime",
-                SituationFamiliale = "Description de la situation"
+                FamilySituation = "Description de la situation"
             };
 
             var postResponse = await client.PostAsJsonAsync("/api/v1/situationspersonnelles", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var createdSituation = await postResponse.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var createdSituation = await postResponse.Content.ReadFromJsonAsync<PersonalSituationDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/situationspersonnelles/{createdSituation!.Id}");
@@ -80,11 +80,11 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var situation = await response.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var situation = await response.Content.ReadFromJsonAsync<PersonalSituationDto>();
             situation.ShouldNotBeNull();
             situation.Id.ShouldBe(createdSituation.Id);
             situation.Regime.ShouldBe("Test Regime");
-            situation.SituationFamiliale.ShouldBe("Description de la situation");
+            situation.FamilySituation.ShouldBe("Description de la situation");
         }
 
         [Fact]
@@ -109,10 +109,10 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var dto = new CreateSituationPersonnelleDto
+            var dto = new CreatePersonalSituationDto
             {
                 Regime = "Test Regime",
-                SituationFamiliale = "Description de la situation"
+                FamilySituation = "Description de la situation"
             };
 
             // Act
@@ -122,10 +122,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var createdSituation = await response.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var createdSituation = await response.Content.ReadFromJsonAsync<PersonalSituationDto>();
             createdSituation.ShouldNotBeNull();
             createdSituation.Regime.ShouldBe("Test Regime");
-            createdSituation.SituationFamiliale.ShouldBe("Description de la situation");
+            createdSituation.FamilySituation.ShouldBe("Description de la situation");
         }
 
         [Fact]
@@ -135,20 +135,20 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateSituationPersonnelleDto
+            var createDto = new CreatePersonalSituationDto
             {
                 Regime = "Initial Regime",
-                SituationFamiliale = "Initial Situation"
+                FamilySituation = "Initial Situation"
             };
             var postResponse = await client.PostAsJsonAsync("/api/v1/situationspersonnelles", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var createdSituation = await postResponse.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var createdSituation = await postResponse.Content.ReadFromJsonAsync<PersonalSituationDto>();
 
-            var updateDto = new UpdateSituationPersonnelleDto
+            var updateDto = new UpdatePersonalSituationDto
             {
                 Id = createdSituation!.Id,
                 Regime = "Updated Regime",
-                SituationFamiliale = "Updated Situation"
+                FamilySituation = "Updated Situation"
             };
 
             // Act
@@ -159,11 +159,11 @@ namespace GestionAssociatifERP.IntegrationTests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var getResponse = await client.GetAsync($"/api/v1/situationspersonnelles/{createdSituation.Id}");
-            var updatedSituation = await getResponse.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var updatedSituation = await getResponse.Content.ReadFromJsonAsync<PersonalSituationDto>();
             updatedSituation.ShouldNotBeNull();
             updatedSituation.Id.ShouldBe(createdSituation.Id);
             updatedSituation.Regime.ShouldBe("Updated Regime");
-            updatedSituation.SituationFamiliale.ShouldBe("Updated Situation");
+            updatedSituation.FamilySituation.ShouldBe("Updated Situation");
         }
 
         [Fact]
@@ -173,11 +173,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateSituationPersonnelleDto
+            var updateDto = new UpdatePersonalSituationDto
             {
                 Id = 2,
                 Regime = "Initial Regime",
-                SituationFamiliale = "Initial Situation"
+                FamilySituation = "Initial Situation"
             };
 
             // Act
@@ -195,11 +195,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateSituationPersonnelleDto
+            var updateDto = new UpdatePersonalSituationDto
             {
                 Id = 9999, // ID qui n'existe pas
                 Regime = "Updated Regime",
-                SituationFamiliale = "Updated Situation"
+                FamilySituation = "Updated Situation"
             };
 
             // Act
@@ -217,15 +217,15 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateSituationPersonnelleDto
+            var createDto = new CreatePersonalSituationDto
             {
                 Regime = "Test Regime",
-                SituationFamiliale = "Description de la situation"
+                FamilySituation = "Description de la situation"
             };
             var postResponse = await client.PostAsJsonAsync("/api/v1/situationspersonnelles", createDto);
             postResponse.EnsureSuccessStatusCode();
 
-            var createdSituation = await postResponse.Content.ReadFromJsonAsync<SituationPersonnelleDto>();
+            var createdSituation = await postResponse.Content.ReadFromJsonAsync<PersonalSituationDto>();
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/situationspersonnelles/{createdSituation!.Id}");

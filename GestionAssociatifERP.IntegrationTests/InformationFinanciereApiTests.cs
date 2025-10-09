@@ -15,11 +15,11 @@ namespace GestionAssociatifERP.IntegrationTests
             var client = factory.CreateClient();
 
             var url = "/api/v1/InformationsFinancieres";
-            var dto = new CreateInformationFinanciereDto
+            var dto = new CreateFinancialInformationDto
             {
-                Modele = "Test Modèle",
-                RevenuAnnuel = (decimal?)1000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now)
+                Model = "Test Modèle",
+                AnnualIncome = (decimal?)1000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
             var postResponse = await client.PostAsJsonAsync(url, dto);
             postResponse.EnsureSuccessStatusCode();
@@ -31,10 +31,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<InformationFinanciereDto>>();
+            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
             informationsFinancieres.ShouldNotBeNull();
             informationsFinancieres.Count.ShouldBeGreaterThan(0);
-            informationsFinancieres.ShouldContain(inf => inf.Modele == "Test Modèle");
+            informationsFinancieres.ShouldContain(inf => inf.Model == "Test Modèle");
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<InformationFinanciereDto>>();
+            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
             informationsFinancieres.ShouldNotBeNull();
             informationsFinancieres.ShouldBeEmpty();
         }
@@ -65,16 +65,16 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var dto = new CreateInformationFinanciereDto
+            var dto = new CreateFinancialInformationDto
             {
-                Modele = "Test Modèle",
-                RevenuAnnuel = (decimal?)1000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now)
+                Model = "Test Modèle",
+                AnnualIncome = (decimal?)1000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
             var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", dto);
             postResponse.EnsureSuccessStatusCode();
 
-            var created = await postResponse.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
             // Act
             var response = await client.GetAsync($"/api/v1/informationsfinancieres/{created!.Id}");
@@ -83,10 +83,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationFinanciere = await response.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var informationFinanciere = await response.Content.ReadFromJsonAsync<FinancialInformationDto>();
             informationFinanciere.ShouldNotBeNull();
             informationFinanciere.Id.ShouldBe(created.Id);
-            informationFinanciere.Modele.ShouldBe("Test Modèle");
+            informationFinanciere.Model.ShouldBe("Test Modèle");
         }
 
         [Fact]
@@ -111,11 +111,11 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var dto = new CreateInformationFinanciereDto
+            var dto = new CreateFinancialInformationDto
             {
-                Modele = "Test Modèle",
-                RevenuAnnuel = (decimal?)1000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now)
+                Model = "Test Modèle",
+                AnnualIncome = (decimal?)1000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
 
             // Act
@@ -125,10 +125,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var created = await response.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var created = await response.Content.ReadFromJsonAsync<FinancialInformationDto>();
             created.ShouldNotBeNull();
-            created.Modele.ShouldBe("Test Modèle");
-            created.RevenuAnnuel.ShouldBe(1000.00m);
+            created.Model.ShouldBe("Test Modèle");
+            created.AnnualIncome.ShouldBe(1000.00m);
         }
 
         [Fact]
@@ -138,22 +138,22 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateInformationFinanciereDto
+            var createDto = new CreateFinancialInformationDto
             {
-                Modele = "Test Modèle",
-                RevenuAnnuel = (decimal?)1000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now)
+                Model = "Test Modèle",
+                AnnualIncome = (decimal?)1000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
             var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
-            var updateDto = new UpdateInformationFinanciereDto
+            var updateDto = new UpdateFinancialInformationDto
             {
                 Id = created!.Id,
-                Modele = "Updated Modèle",
-                RevenuAnnuel = (decimal?)2000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+                Model = "Updated Modèle",
+                AnnualIncome = (decimal?)2000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
             };
 
             // Act
@@ -164,10 +164,10 @@ namespace GestionAssociatifERP.IntegrationTests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
             var getResponse = await client.GetAsync($"/api/v1/informationsfinancieres/{created.Id}");
-            var updated = await getResponse.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var updated = await getResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
             updated.ShouldNotBeNull();
-            updated.Modele.ShouldBe("Updated Modèle");
-            updated.RevenuAnnuel.ShouldBe(2000.00m);
+            updated.Model.ShouldBe("Updated Modèle");
+            updated.AnnualIncome.ShouldBe(2000.00m);
         }
 
         [Fact]
@@ -177,12 +177,12 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateInformationFinanciereDto
+            var updateDto = new UpdateFinancialInformationDto
             {
                 Id = 2,
-                Modele = "Updated Modèle",
-                RevenuAnnuel = (decimal?)2000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+                Model = "Updated Modèle",
+                AnnualIncome = (decimal?)2000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
             };
 
             // Act
@@ -200,12 +200,12 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var updateDto = new UpdateInformationFinanciereDto
+            var updateDto = new UpdateFinancialInformationDto
             {
                 Id = 9999,
-                Modele = "Updated Modèle",
-                RevenuAnnuel = (decimal?)2000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+                Model = "Updated Modèle",
+                AnnualIncome = (decimal?)2000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
             };
 
             // Act
@@ -223,15 +223,15 @@ namespace GestionAssociatifERP.IntegrationTests
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var createDto = new CreateInformationFinanciereDto
+            var createDto = new CreateFinancialInformationDto
             {
-                Modele = "Test Modèle",
-                RevenuAnnuel = (decimal?)1000.00,
-                DateDebut = DateOnly.FromDateTime(DateTime.Now)
+                Model = "Test Modèle",
+                AnnualIncome = (decimal?)1000.00,
+                StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
             var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", createDto);
             postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<InformationFinanciereDto>();
+            var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
             // Act
             var response = await client.DeleteAsync($"/api/v1/informationsfinancieres/{created!.Id}");
