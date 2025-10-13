@@ -1,4 +1,4 @@
-﻿using GestionAssociatifERP.Models;
+﻿using GestionAssociatifERP.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -18,11 +18,11 @@ namespace GestionAssociatifERP.IntegrationTests
             builder.ConfigureTestServices(services =>
             {
                 // Supprimer la config de la vraie DB
-                services.RemoveAll(typeof(DbContextOptions<GestionAssociatifDbContext>));
-                services.RemoveAll(typeof(GestionAssociatifDbContext));
+                services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
+                services.RemoveAll(typeof(AppDbContext));
 
                 // Ajouter une DB InMemory
-                services.AddDbContext<GestionAssociatifDbContext>(options =>
+                services.AddDbContext<AppDbContext>(options =>
                 {
                     options.UseInMemoryDatabase(_dbName); // même nom pour toute la durée d’un test
                 });
@@ -33,7 +33,7 @@ namespace GestionAssociatifERP.IntegrationTests
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<GestionAssociatifDbContext>();
+                    var db = scopedServices.GetRequiredService<AppDbContext>();
 
                     // S'assurer que la DB est créée
                     db.Database.EnsureDeleted();

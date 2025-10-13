@@ -5,16 +5,16 @@ using System.Net.Http.Json;
 
 namespace GestionAssociatifERP.IntegrationTests
 {
-    public class InformationFinanciereApiTests
+    public class FinancialInformationApiTests
     {
         [Fact]
-        public async Task GetAllInformationFinanciere_ShouldReturnInformationsFinancieres_WhenDataExists()
+        public async Task GetAllFinancialInformations_ShouldReturnFinancialInformations_WhenDataExists()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var url = "/api/v1/InformationsFinancieres";
+            var url = "/api/v1/financialinformations";
             var dto = new CreateFinancialInformationDto
             {
                 Model = "Test Modèle",
@@ -31,20 +31,20 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
-            informationsFinancieres.ShouldNotBeNull();
-            informationsFinancieres.Count.ShouldBeGreaterThan(0);
-            informationsFinancieres.ShouldContain(inf => inf.Model == "Test Modèle");
+            var financialInformations = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
+            financialInformations.ShouldNotBeNull();
+            financialInformations.Count.ShouldBeGreaterThan(0);
+            financialInformations.ShouldContain(inf => inf.Model == "Test Modèle");
         }
 
         [Fact]
-        public async Task GetAllInformationFinanciere_ShouldReturnOkAndEmptyList_WhenNoData()
+        public async Task GetAllFinancialInformations_ShouldReturnOkAndEmptyList_WhenNoData()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
-            var url = "/api/v1/InformationsFinancieres";
+            var url = "/api/v1/financialinformations";
 
             // Act
             var response = await client.GetAsync(url);
@@ -53,13 +53,13 @@ namespace GestionAssociatifERP.IntegrationTests
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationsFinancieres = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
-            informationsFinancieres.ShouldNotBeNull();
-            informationsFinancieres.ShouldBeEmpty();
+            var financialInformations = await response.Content.ReadFromJsonAsync<List<FinancialInformationDto>>();
+            financialInformations.ShouldNotBeNull();
+            financialInformations.ShouldBeEmpty();
         }
 
         [Fact]
-        public async Task GetInformationFinanciereById_ShouldReturnInformationFinanciere_WhenExists()
+        public async Task GetFinancialInformationById_ShouldReturnFinancialInformation_WhenExists()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -71,33 +71,33 @@ namespace GestionAssociatifERP.IntegrationTests
                 AnnualIncome = (decimal?)1000.00,
                 StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
-            var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", dto);
+            var postResponse = await client.PostAsJsonAsync("/api/v1/financialinformations", dto);
             postResponse.EnsureSuccessStatusCode();
 
             var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
             // Act
-            var response = await client.GetAsync($"/api/v1/informationsfinancieres/{created!.Id}");
+            var response = await client.GetAsync($"/api/v1/financialinformations/{created!.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var informationFinanciere = await response.Content.ReadFromJsonAsync<FinancialInformationDto>();
-            informationFinanciere.ShouldNotBeNull();
-            informationFinanciere.Id.ShouldBe(created.Id);
-            informationFinanciere.Model.ShouldBe("Test Modèle");
+            var financialInformation = await response.Content.ReadFromJsonAsync<FinancialInformationDto>();
+            financialInformation.ShouldNotBeNull();
+            financialInformation.Id.ShouldBe(created.Id);
+            financialInformation.Model.ShouldBe("Test Modèle");
         }
 
         [Fact]
-        public async Task GetInformationFinanciereById_ShouldReturnNotFound_WhenDoesNotExist()
+        public async Task GetFinancialInformationById_ShouldReturnNotFound_WhenDoesNotExist()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/api/v1/informationsfinancieres/9999");
+            var response = await client.GetAsync("/api/v1/financialinformations/9999");
             var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
@@ -105,7 +105,7 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task CreateInformationFinanciere_ShouldReturnCreated_WhenValid()
+        public async Task CreateFinancialInformation_ShouldReturnCreated_WhenValid()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -119,7 +119,7 @@ namespace GestionAssociatifERP.IntegrationTests
             };
 
             // Act
-            var response = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", dto);
+            var response = await client.PostAsJsonAsync("/api/v1/financialinformations", dto);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -132,7 +132,7 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task UpdateInformationFinanciere_ShouldReturnNoContent_WhenValid()
+        public async Task UpdateFinancialInformation_ShouldReturnNoContent_WhenValid()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -144,7 +144,7 @@ namespace GestionAssociatifERP.IntegrationTests
                 AnnualIncome = (decimal?)1000.00,
                 StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
-            var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", createDto);
+            var postResponse = await client.PostAsJsonAsync("/api/v1/financialinformations", createDto);
             postResponse.EnsureSuccessStatusCode();
             var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
@@ -157,13 +157,13 @@ namespace GestionAssociatifERP.IntegrationTests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync($"/api/v1/informationsfinancieres/{created.Id}", updateDto);
+            var response = await client.PutAsJsonAsync($"/api/v1/financialinformations/{created.Id}", updateDto);
 
             // Assert
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-            var getResponse = await client.GetAsync($"/api/v1/informationsfinancieres/{created.Id}");
+            var getResponse = await client.GetAsync($"/api/v1/financialinformations/{created.Id}");
             var updated = await getResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
             updated.ShouldNotBeNull();
             updated.Model.ShouldBe("Updated Modèle");
@@ -171,7 +171,7 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task UpdateInformationFinanciere_ShouldReturnBadRequest_WhenIdMismatch()
+        public async Task UpdateFinancialInformation_ShouldReturnBadRequest_WhenIdMismatch()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -186,7 +186,7 @@ namespace GestionAssociatifERP.IntegrationTests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync("/api/v1/informationsfinancieres/1", updateDto);
+            var response = await client.PutAsJsonAsync("/api/v1/financialinformations/1", updateDto);
             var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.BadRequest);
 
             // Assert
@@ -194,7 +194,7 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task UpdateInformationFinanciere_ShouldReturnNotFound_WhenDoesNotExist()
+        public async Task UpdateFinancialInformation_ShouldReturnNotFound_WhenDoesNotExist()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -209,7 +209,7 @@ namespace GestionAssociatifERP.IntegrationTests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync("/api/v1/informationsfinancieres/9999", updateDto);
+            var response = await client.PutAsJsonAsync("/api/v1/financialinformations/9999", updateDto);
             var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert
@@ -217,7 +217,7 @@ namespace GestionAssociatifERP.IntegrationTests
         }
 
         [Fact]
-        public async Task DeleteInformationFinanciere_ShouldReturnNoContent_WhenExists()
+        public async Task DeleteFinancialInformation_ShouldReturnNoContent_WhenExists()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
@@ -229,30 +229,30 @@ namespace GestionAssociatifERP.IntegrationTests
                 AnnualIncome = (decimal?)1000.00,
                 StartDate = DateOnly.FromDateTime(DateTime.Now)
             };
-            var postResponse = await client.PostAsJsonAsync("/api/v1/informationsfinancieres", createDto);
+            var postResponse = await client.PostAsJsonAsync("/api/v1/financialinformations", createDto);
             postResponse.EnsureSuccessStatusCode();
             var created = await postResponse.Content.ReadFromJsonAsync<FinancialInformationDto>();
 
             // Act
-            var response = await client.DeleteAsync($"/api/v1/informationsfinancieres/{created!.Id}");
+            var response = await client.DeleteAsync($"/api/v1/financialinformations/{created!.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-            var getResponse = await client.GetAsync($"/api/v1/informationsfinancieres/{created.Id}");
+            var getResponse = await client.GetAsync($"/api/v1/financialinformations/{created.Id}");
             getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public async Task DeleteInformationFinanciere_ShouldReturnNotFound_WhenDoesNotExist()
+        public async Task DeleteFinancialInformation_ShouldReturnNotFound_WhenDoesNotExist()
         {
             // Arrange
             using var factory = new CustomWebApplicationFactory();
             var client = factory.CreateClient();
 
             // Act
-            var response = await client.DeleteAsync("/api/v1/informationsfinancieres/9999");
+            var response = await client.DeleteAsync("/api/v1/financialinformations/9999");
             var exception = await AssertProblemDetails.AssertProblem(response, HttpStatusCode.NotFound);
 
             // Assert

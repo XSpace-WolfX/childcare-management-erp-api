@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int GuardianId { get; set; }
-        public string? FamilySituation { get; set; }
+        public string? MaritalStatus { get; set; }
         public string? Sector { get; set; }
         public string? Area { get; set; }
         public string? Regime { get; set; }
@@ -13,7 +13,7 @@
     public class CreatePersonalSituationDto
     {
         public int GuardianId { get; set; }
-        public string? FamilySituation { get; set; }
+        public string? MaritalStatus { get; set; }
         public string? Sector { get; set; }
         public string? Area { get; set; }
         public string? Regime { get; set; }
@@ -23,7 +23,7 @@
     {
         public int Id { get; set; }
         public int GuardianId { get; set; }
-        public string? FamilySituation { get; set; }
+        public string? MaritalStatus { get; set; }
         public string? Sector { get; set; }
         public string? Area { get; set; }
         public string? Regime { get; set; }
