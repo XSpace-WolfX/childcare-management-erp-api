@@ -13,8 +13,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  azureSubscription: 'AzureConnection' # nom de ta service connection Azure DevOps
-  appName: 'GestionAssociatifERP'       # nom exact de ton App Service Azure
+  azureSubscription: 'AzureConnection-Dev-ccerp' # nom de ta service connection Azure DevOps
+  appName: 'sx-ccerp-dev-api-weu'       # nom exact de ton App Service Azure
   dotnetVersion: '8.x'
 
 steps:
