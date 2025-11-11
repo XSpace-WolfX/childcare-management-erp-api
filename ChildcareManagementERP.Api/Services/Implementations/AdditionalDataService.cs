@@ -39,7 +39,7 @@ namespace ChildcareManagementERP.Api.Services
 
         public async Task<AdditionalDataDto> CreateAdditionalDataAsync(CreateAdditionalDataDto additionalDataDto)
         {
-            var additionalData = _mapper.Map<AdditionalData>(additionalDataDto);
+            var additionalData = _mapper.Map<AdditionalDatum>(additionalDataDto);
             if (additionalData == null)
                 throw new Exception("Erreur lors de la création de la donnée supplémentaire : Le Mapping a échoué.");
 

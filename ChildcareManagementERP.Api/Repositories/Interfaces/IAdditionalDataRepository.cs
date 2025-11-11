@@ -2,5 +2,5 @@
 
 namespace ChildcareManagementERP.Api.Repositories
 {
-    public interface IAdditionalDataRepository : IGenericRepository<AdditionalData> { }
+    public interface IAdditionalDataRepository : IGenericRepository<AdditionalDatum> { }
 }

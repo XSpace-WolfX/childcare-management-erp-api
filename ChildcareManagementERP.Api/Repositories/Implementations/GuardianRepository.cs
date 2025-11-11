@@ -11,14 +11,14 @@ namespace ChildcareManagementERP.Api.Repositories
         public async Task<Guardian?> GetWithFinancialInformationAsync(int id)
         {
             return await _dbContext.Guardians
-                .Include(g => g.FinancialInformations)
+                .Include(g => g.FinancialInformation)
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<Guardian?> GetWithPersonalSituationAsync(int id)
         {
             return await _dbContext.Guardians
-                .Include(g => g.PersonalSituations)
+                .Include(g => g.PersonalSituation)
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
 

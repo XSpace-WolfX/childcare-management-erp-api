@@ -33,9 +33,9 @@ namespace ChildcareManagementERP.Api.Mappings
             CreateMap<CreatePersonalSituationDto, PersonalSituation>();
             CreateMap<UpdatePersonalSituationDto, PersonalSituation>();
 
-            CreateMap<AdditionalData, AdditionalDataDto>();
-            CreateMap<CreateAdditionalDataDto, AdditionalData>();
-            CreateMap<UpdateAdditionalDataDto, AdditionalData>();
+            CreateMap<AdditionalDatum, AdditionalDataDto>();
+            CreateMap<CreateAdditionalDataDto, AdditionalDatum>();
+            CreateMap<UpdateAdditionalDataDto, AdditionalDatum>();
 
             CreateMap<AuthorizedPerson, AuthorizedPersonDto>();
             CreateMap<AuthorizedPerson, AuthorizedPersonWithChildrenDto>()
