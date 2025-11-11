@@ -25,7 +25,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         public async Task GetAllAdditionalDatasAsync_WhenAdditionalDatasExist_ShouldReturnMappedDtoList()
         {
             // Arrange
-            var additionalDatas = new List<AdditionalData>
+            var additionalDatas = new List<AdditionalDatum>
             {
                 new() { Id = 1, ChildId = 3, ParamName = "Allergie" },
                 new() { Id = 2, ChildId = 7, ParamName = "Scolarisé", ParamType = "bool" }
@@ -58,7 +58,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         public async Task GetAllAdditionalDatasAsync_WhenNoAdditionalData_ShouldReturnEmptyDtoList()
         {
             // Arrange
-            var additionalDatas = new List<AdditionalData>();
+            var additionalDatas = new List<AdditionalDatum>();
             var additionalDatasDtos = new List<AdditionalDataDto>();
 
             _additionalDataRepositoryMock
@@ -81,7 +81,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         public async Task GetAdditionalDataAsync_WhenAdditionalDataExists_ShouldReturnMappedDto()
         {
             // Arrange
-            var additionalData = new AdditionalData { Id = 1, ChildId = 3, ParamName = "Allergie" };
+            var additionalData = new AdditionalDatum { Id = 1, ChildId = 3, ParamName = "Allergie" };
             var additionalDataDto = new AdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Allergie" };
 
             _additionalDataRepositoryMock
@@ -106,7 +106,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             // Arrange
             _additionalDataRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(1))
-                .ReturnsAsync(null as AdditionalData);
+                .ReturnsAsync(null as AdditionalDatum);
 
             // Act
             var exception = await Should.ThrowAsync<Exception>(async () => await _additionalDataService.GetAdditionalDataAsync(1));
@@ -120,11 +120,11 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         {
             // Arrange
             var newAdditionalDataDto = new CreateAdditionalDataDto { ChildId = 3, ParamName = "Allergie" };
-            var additionalData = new AdditionalData { Id = 1, ChildId = 3, ParamName = "Allergie" };
+            var additionalData = new AdditionalDatum { Id = 1, ChildId = 3, ParamName = "Allergie" };
             var createdDonneeSupplementaireDto = new AdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Allergie" };
 
             _mapperMock
-                .Setup(m => m.Map<AdditionalData>(newAdditionalDataDto))
+                .Setup(m => m.Map<AdditionalDatum>(newAdditionalDataDto))
                 .Returns(additionalData);
 
             _additionalDataRepositoryMock
@@ -154,8 +154,8 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             var newAdditionalDataDto = new CreateAdditionalDataDto { ChildId = 3, ParamName = "Allergie" };
 
             _mapperMock
-                .Setup(m => m.Map<AdditionalData>(newAdditionalDataDto))
-                .Returns((AdditionalData)null!);
+                .Setup(m => m.Map<AdditionalDatum>(newAdditionalDataDto))
+                .Returns((AdditionalDatum)null!);
 
             // Act
             var exception = await Should.ThrowAsync<Exception>(async () => await _additionalDataService.CreateAdditionalDataAsync(newAdditionalDataDto));
@@ -163,7 +163,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             // Assert
             exception.Message.ShouldBe("Erreur lors de la création de la donnée supplémentaire : Le Mapping a échoué.");
 
-            _additionalDataRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<AdditionalData>()), Times.Never);
+            _additionalDataRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<AdditionalDatum>()), Times.Never);
         }
 
         [Fact]
@@ -171,7 +171,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var additionalData = new AdditionalData { Id = id, ChildId = 3, ParamName = "Scolarisé" };
+            var additionalData = new AdditionalDatum { Id = id, ChildId = 3, ParamName = "Scolarisé" };
             var updateAdditionalDataDto = new UpdateAdditionalDataDto { Id = 1, ChildId = 3, ParamName = "Scolarisé" };
 
             _additionalDataRepositoryMock
@@ -207,7 +207,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             // Assert
             exception.Message.ShouldBe("L'identifiant de la donnée supplémentaire ne correspond pas à celui de l'objet envoyé.");
 
-            _additionalDataRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<AdditionalData>()), Times.Never);
+            _additionalDataRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<AdditionalDatum>()), Times.Never);
         }
 
         [Fact]
@@ -219,7 +219,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
 
             _additionalDataRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
-                .ReturnsAsync(null as AdditionalData);
+                .ReturnsAsync(null as AdditionalDatum);
 
             // Act
             var exception = await Should.ThrowAsync<Exception>(async () => await _additionalDataService.UpdateAdditionalDataAsync(id, updateAdditionalDataDto));
@@ -227,7 +227,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             // Assert
             exception.Message.ShouldBe("Aucune donnée supplémentaire correspondante n'a été trouvée.");
 
-            _additionalDataRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<AdditionalData>()), Times.Never);
+            _additionalDataRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<AdditionalDatum>()), Times.Never);
         }
 
         [Fact]
@@ -235,7 +235,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
         {
             // Arrange
             var id = 1;
-            var additionalData = new AdditionalData { Id = id, ChildId = 3, ParamName = "Scolarisé" };
+            var additionalData = new AdditionalDatum { Id = id, ChildId = 3, ParamName = "Scolarisé" };
 
             _additionalDataRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
@@ -261,7 +261,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
 
             _additionalDataRepositoryMock
                 .Setup(repo => repo.GetByIdAsync(id))
-                .ReturnsAsync(null as AdditionalData);
+                .ReturnsAsync(null as AdditionalDatum);
 
             // Act
             var exception = await Should.ThrowAsync<Exception>(async () => await _additionalDataService.DeleteAdditionalDataAsync(id));
