@@ -124,12 +124,10 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
                 Id = 1,
                 FirstName = "John",
                 LastName = "Doe",
-                FinancialInformations = new List<FinancialInformation>
-                {
-                    new() {
+                FinancialInformation = new FinancialInformation 
+                { 
                     Id = 1,
                     FamilyQuotient = 1000
-                    }
                 }
             };
 
@@ -226,12 +224,10 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
                 Id = 1,
                 FirstName = "John",
                 LastName = "Doe",
-                PersonalSituations = new List<PersonalSituation>
+                PersonalSituation = new PersonalSituation
                 {
-                    new() {
                     Id = 1,
                     MaritalStatus = "Célibataire"
-                    }
                 }
             };
 

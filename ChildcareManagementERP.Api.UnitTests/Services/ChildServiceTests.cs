@@ -318,7 +318,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             {
                 Id = 1,
                 LastName = "Alice",
-                AdditionalData = new List<AdditionalData>
+                AdditionalData = new List<AdditionalDatum>
                 {
                     new() { Id = 1, ParamValue = "A" },
                     new() { Id = 2, ParamValue = "B" }
@@ -364,7 +364,7 @@ namespace ChildcareManagementERP.Api.UnitTests.Services
             {
                 Id = 1,
                 LastName = "Alice",
-                AdditionalData = new List<AdditionalData>()
+                AdditionalData = new List<AdditionalDatum>()
             };
 
             var childWithAdditionalDatasDto = new ChildWithAdditionalDatasDto
